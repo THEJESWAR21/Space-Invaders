@@ -3,7 +3,7 @@
 Pygame - v2.6.1
 
 ## PLAYER
-- Move left and Right Using WASD and Arrow Keys
+- Move left and Right Using WASD and Arrow Keys ✅
 - Shoot Bullets using space bar
 - Has 3 base lifes and every level increase life by 1
 
@@ -18,3 +18,4 @@ Pygame - v2.6.1
 ## ENVIRONMENT
 - There 3 walls that protect the player from enemy projectile
 - The wall gets slowly get desktroyed if it tanks more bullets
+
