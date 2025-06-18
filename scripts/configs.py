@@ -1,5 +1,6 @@
-WINDOW_NAME = "Space-Invaders"
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
-FPS = 60
-
+CONFIG = {
+    "X": 1280,
+    "Y": 720,
+    "RefreshRate": 60,
+    "WindowName": 'Space-Invaders'
+}

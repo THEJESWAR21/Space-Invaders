@@ -1,4 +1,10 @@
-import pygame, os
+import pygame
+import os
 
-class player:
-    ...
+class Player:
+    def __init__(self, player ,health, speed):
+        self.health = health
+        self.speed = speed
+    
+    def Player_Movement(self):
+        ...
