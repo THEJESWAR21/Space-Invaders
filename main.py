@@ -1,6 +1,7 @@
 import pygame
 import sys, os
 from scripts.Configs import CONFIG
+from scripts.Player import Player
 
 pygame.init()
 
@@ -20,14 +21,13 @@ class Window():
         sys.exit()
 
     def Player(self):
-        Player_Asset = os.path.join("assets", "Player.png")
-        player = pygame.image.load(Player_Asset).convert_alpha()
-        player_pos = (700, 625)
-        player_width = player.get_width()
+        player_class = Player()
+        player = pygame.image.load(player_class.Player_Assets).convert_alpha()
+        player_width = player.get_height()
         player_height = player.get_height()
-
-        player = pygame.transform.scale(player, (player_width * 0.4, player_height * 0.4))
-        self.Screen.blit(player, player_pos)
+        player = pygame.transform.scale(player_class.Player_Assets, (player_width * 0.4, player.get_height * 0.4))
+        self.Screen.blit(player, player_class.player_pos)
+        
 
     def clear_Screen(self):
         self.Screen.fill((0,0,0))
