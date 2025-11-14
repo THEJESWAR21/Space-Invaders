@@ -1,26 +1,38 @@
 # Space Invaders Game Requirements
 
-Pygame - v2.6.1
+## Player
+- Add the player sprite to the sccreen
+- Make the player move left and right using WASD and Arrow Keys
+- Shoot Bullets Using Space Bar or Up Key
+- Add a life system with 3 life at the start and every round it increases by one
+- When the player detect a wall in front it should increase the fire rate 
 
-## PLAYER
-- Add Player to The Screen ✅
-- Move left and Right Using WASD and Arrow Keys ✅ 
-- Shoot Bullets using space bar
-- Has 3 base lifes and every level increase life by 1
+## Enemies
+- Add the enemies sprite in a 5 x 10 layout
+- Make the top enemies shoot bullet randomly
+- Make all the enemies more to the right and once they hit the corner they all move down getting close to the base
+- Make a points system for the enemies
+- As Level goes on the enemies should get faster and faster and bullet should shoot faster as well
+- Make the UFO affear and random time between every 25 Seconds
+- Make the enemies actually die by the bullet
+- Make the animation for the player drying
 
-## ENEMIES
-- 4 Columns and 11 Rows of Enemies 
-- The enemies is the first row is worth 10 and the enemies in the next row is 20 and so on
-- Only the Enemy in the last row shoots bullet and it all random
-- If an enemy touchs the left edge of the screen all enemies move a block down
-- As the game goes the enemies are faster
-- The Space Ship is worth 100 points and it randomly appies and move from left to right
+## Environment / UI
+- Add the Score board in the UI
+- Add the Lives in the UI 
+- Add the Barrier Sprites in
+- Add in the Barriers that blocks the player hit
+- Make the barriers get damaged and fall Apart by the player and the enemies
+- Make the Main Menu Screen
+- Make the End Game Screen With HighScore and gets stored Each time
 
-## ENVIRONMENT
-- There 3 walls that protect the player from enemy projectile
-- The wall gets slowly get desktroyed if it tanks more bullets
+## Sounds
+- Make the Sounds match the animation of the enemies
+- Add the UFO Sound
+- Add the shooting sounds
+- Add the Getting hit sounds
 
-## Addtionals
-- Make the Project Fully OOP
-- make the directory more organized
+## Additionals
+- Make the Code Object Oriented
+- Make the directory more organized
 
