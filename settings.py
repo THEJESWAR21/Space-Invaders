@@ -10,3 +10,4 @@ FPS = 60
 # Player Settings
 PLAYER_X = 640
 PLAYER_Y = 680
+SPEED = 250

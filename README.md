@@ -2,7 +2,7 @@
 
 ## Player
 - Add the player sprite to the sccreen ✅
-- Make the player move left and right using WASD and Arrow Keys
+- Make the player move left and right using WASD and Arrow Keys ✅
 - Shoot Bullets Using Space Bar or Up Key
 - Add a life system with 3 life at the start and every round it increases by one
 - When the player detect a wall in front it should increase the fire rate 
