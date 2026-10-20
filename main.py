@@ -1,15 +1,22 @@
-from tkinter import Tk, ttk
+import tkinter as tk
+from tkinter import ttk
 
-def main():
-    root = Tk() # Create the ROOT Window and the TK Instance
-    frm = ttk.Frame(root, padding=10) # FRAME Widget
-    frm.grid()
-    ttk.Label(frm, text="Hello, World!").grid(column=0, row=0) # Grid is used to position the Label
-    ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=0)
-    print(frm.grid_size())
-    root.mainloop()
+def main(root):
+    root.title("Space-Invaders")
+
+    width, height = 800, 600
+    scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
+
+    x = (scr_width - width) // 2
+    y = (scr_height - height) // 2
+    
+    root.geometry(f"{width}x{height}+{x}+{y}")
+
+
 
 
 if __name__ == "__main__":
-    main()
+    root = tk.Tk() # Create the ROOT Window and the TK Instance
+    main(root)
+    root.mainloop()
         
