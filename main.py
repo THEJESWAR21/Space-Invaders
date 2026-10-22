@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, PhotoImage
+from tkinter import ttk
 
 # TODO: Create the Ship and Make it Move
 # TODO: OOP
@@ -20,7 +20,19 @@ def main(root):
     
     root.geometry(f"{width}x{height}+{x}+{y}")
     root.resizable(False, False) # Width, Height
-    root.configure(bg="black")
+    # root.configure(bg="black")
+
+    frm = tk.Frame(root, bg="Blue") # ROOT FRAME
+    frm.pack(fill="both", expand=True)
+
+    player_area = tk.Canvas(frm, bg="Red", width="65", height='65', bd=1) 
+    player_area.create_rectangle(10,10,60,60, fill='green', outline="green")
+
+    player_area.pack(side="bottom")
+
+    # player_area.update()
+    # print(player_area.winfo_width())
+    # print(player_area.winfo_height())
 
 
 if __name__ == "__main__":
