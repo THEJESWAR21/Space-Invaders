@@ -28,6 +28,7 @@ def main(root):
     # PLAYER
     player_cvw, player_cvh = win_width, 80 # (1280,80)
     player_x, player_y = 60, 60 # Size of Player
+    player_speed = 10
 
     player_area = tk.Canvas(frm, bg="Red", height=player_cvh, highlightthickness=0) 
 
@@ -38,12 +39,22 @@ def main(root):
     Y0 = (player_cvh // 2) - (player_y // 2)
     X1 = (player_cvw // 2) + (player_x // 2)
     Y1 = (player_cvh // 2) + (player_y // 2)
-    
     # (610, 10, 670, 70)
     
     player = player_area.create_rectangle(X0, Y0, X1, Y1, fill='green' ,width=0)
-    player_area.pack(side="bottom", fill=tk.X)
+   
+    # 609.6
+    # player_area.move(player, 609.6, 0)
+    
+    # Movement
+    root.bind('<Right>', lambda event: player_area.move(player, 15, 0))
+    root.bind('<d>', lambda event: player_area.move(player, 15, 0))
+    root.bind('<Left>', lambda event: player_area.move(player, -15, 0))
+    root.bind('<a>', lambda event: player_area.move(player, -15, 0))
 
+
+
+    player_area.pack(side="bottom", fill=tk.X)
 
 if __name__ == "__main__":
     root = tk.Tk() # Create the ROOT Window and the TK Instance
