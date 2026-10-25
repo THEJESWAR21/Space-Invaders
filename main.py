@@ -10,8 +10,7 @@ from tkinter import ttk
 # RESEARCH: GARBAGE COLLECTION
 
 root = tk.Tk()
-player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Ship2.png") # 16x16 (RESIZED: 6.0x (96x96))
-squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Ship2.png") # 16x16 (RESIZED: 6.0x (96x96))
+player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Ship.png") # 16x16 (RESIZED: 6.0x (96x96))
 
 win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -48,8 +47,7 @@ def player_draw(frm):
     # Y1 = (player_cvh // 2) + (player_y // 2)
     # (610, 10, 670, 70)
    
-    player_area = tk.Canvas(frm, bg="Black", height=player_cvh, highlightthickness=0) 
-    player = player_area.create_image(x0,y0, image=player_img)
+    player_area = tk.Canvas(frm, bg="lightgreen", height=player_cvh, highlightthickness=0) 
     player = player_area.create_image(x0,y0, image=player_img)
     # player_area.move(player, 609.6, 0)
    
