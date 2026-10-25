@@ -56,16 +56,24 @@ def player_draw(frm):
 
     return player_area, player
 
-    
 def player_movement(player_area, player):
-    root.bind('<Right>', lambda event: player_area.move(player, player_speed, 0))
-    root.bind('<Right>', lambda event: print(player_area.coords(player)), add="+")
-    root.bind('<d>', lambda event: player_area.move(player, player_speed, 0))
+    # Edge: (40,40) , (1240, 40)
     root.bind('<Left>', lambda event: player_area.move(player, -player_speed, 0))
     root.bind('<Left>', lambda event: print(player_area.coords(player)), add="+")
     root.bind('<a>', lambda event: player_area.move(player, -player_speed, 0))
+    root.bind('<a>', lambda event: print(player_area.coords(player)), add="+")
 
-    return
+    root.bind('<Right>', lambda event: player_area.move(player, player_speed, 0)) 
+    root.bind('<Right>', lambda event: print(player_area.coords(player)), add="+")
+    
+    root.bind('<d>', lambda event: player_area.move(player, player_speed, 0))
+    root.bind('<d>', lambda event: print(player_area.coords(player)), add="+")
+
+
+
+def every_frame():
+    print("Hello")
+    root.after(5000, every_frame)
 
 
 
@@ -73,6 +81,7 @@ def main():
     frm = config()
     player_area, player = player_draw(frm)
     player_movement(player_area, player)
+    every_frame()
 
 if __name__ == "__main__":
     main()
