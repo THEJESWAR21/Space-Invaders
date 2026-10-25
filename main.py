@@ -18,6 +18,7 @@ scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
 
 player_speed = 15 
 
+
 def config():
     root.title("Space-Invaders")
 
@@ -34,54 +35,61 @@ def config():
     return frm
 
 def player_draw(frm):
-    # PLAYER
     player_cvw, player_cvh = win_width, 80 # (1280,80) Player Canvas Size
-    player_x, player_y = 64, 0 # Size of Player Sprite
+    # player_x, player_y = 60, 0 # Size of Player Sprite
 
     # Size of square: 60 x 60
     # MidPoint of Canvas: 1280 // 2 x 80 // 2 = 640 x 40
 
-    X0 = (player_cvw // 2) - (player_x // 2)
-    Y0 = (player_cvh // 2) - (player_y // 2)
-    X1 = (player_cvw // 2) + (player_x // 2)
-    Y1 = (player_cvh // 2) + (player_y // 2)
+    x0 = player_cvw // 2
+    y0 = player_cvh // 2
+    # X0 = (player_cvw // 2) - (player_x // 2)
+    # Y0 = (player_cvh // 2) - (player_y // 2)
+    # X1 = (player_cvw // 2) + (player_x // 2)
+    # Y1 = (player_cvh // 2) + (player_y // 2)
     # (610, 10, 670, 70)
+    
+
    
     player_area = tk.Canvas(frm, bg="lightgreen", height=player_cvh, highlightthickness=0) 
-    player = player_area.create_image(640,40,image=player_img)
-    # player = player_area.create_rectangle(X0, Y0, X1, Y1, fill='green' ,width=0)
+    player = player_area.create_image(x0,y0, image=player_img)
     # player_area.move(player, 609.6, 0)
    
     player_area.pack(side="bottom", fill=tk.X)
 
     return player_area, player
 
-def player_movement(player_area, player):
-    # Edge: (40,40) , (1240, 40)
-    root.bind('<Left>', lambda event: player_area.move(player, -player_speed, 0))
-    root.bind('<Left>', lambda event: print(player_area.coords(player)), add="+")
-    root.bind('<a>', lambda event: player_area.move(player, -player_speed, 0))
-    root.bind('<a>', lambda event: print(player_area.coords(player)), add="+")
+def player_move(event, player_area, player):
 
-    root.bind('<Right>', lambda event: player_area.move(player, player_speed, 0)) 
-    root.bind('<Right>', lambda event: print(player_area.coords(player)), add="+")
-    
-    root.bind('<d>', lambda event: player_area.move(player, player_speed, 0))
-    root.bind('<d>', lambda event: print(player_area.coords(player)), add="+")
+    player_size = player_area.bbox(player)
 
+    key = event.keysym
+    x_pos, y_pos = player_area.coords(player)
+
+    print(x_pos)
+    print(player_size)
+
+    if (key == "a" or key == "Left") and x_pos > 48: 
+        player_area.move(player, -player_speed, 0)
+    elif (key == "d" or key == "Right") and x_pos < 1240:
+        player_area.move(player, player_speed, 0)
+    else:
+        player_area.move(player, 0, 0)
+
+    return
 
 
 def every_frame():
     print("Hello")
     root.after(5000, every_frame)
 
-
-
 def main():
     frm = config()
     player_area, player = player_draw(frm)
-    player_movement(player_area, player)
-    every_frame()
+
+    root.bind('<KeyPress>', lambda event: player_move(event, player_area, player))
+
+    # every_frame()
 
 if __name__ == "__main__":
     main()
