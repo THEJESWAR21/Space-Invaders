@@ -3,7 +3,6 @@ from tkinter import ttk
 
 # DONE: Create the Ship and Make it Move
 # TODO: Create Smooth Movement / Delta Time
-# TODO: Clean Up The Code / OOP
 # TODO: Shooting Mechanics
 # TODO: Enemies and its AI
 # TODO: Score / HighScore
@@ -11,13 +10,13 @@ from tkinter import ttk
 # RESEARCH: GARBAGE COLLECTION
 
 root = tk.Tk()
-player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Ship.png") # 16x16 (RESIZED: 6.0x (96x96))
+player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Ship2.png") # 16x16 (RESIZED: 6.0x (96x96))
+squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Ship2.png") # 16x16 (RESIZED: 6.0x (96x96))
 
 win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
 
 player_speed = 15 
-
 
 def config():
     root.title("Space-Invaders")
@@ -48,10 +47,9 @@ def player_draw(frm):
     # X1 = (player_cvw // 2) + (player_x // 2)
     # Y1 = (player_cvh // 2) + (player_y // 2)
     # (610, 10, 670, 70)
-    
-
    
-    player_area = tk.Canvas(frm, bg="lightgreen", height=player_cvh, highlightthickness=0) 
+    player_area = tk.Canvas(frm, bg="Black", height=player_cvh, highlightthickness=0) 
+    player = player_area.create_image(x0,y0, image=player_img)
     player = player_area.create_image(x0,y0, image=player_img)
     # player_area.move(player, 609.6, 0)
    
@@ -60,18 +58,15 @@ def player_draw(frm):
     return player_area, player
 
 def player_move(event, player_area, player):
-
     player_size = player_area.bbox(player)
+    window_height = root.winfo_width()
 
     key = event.keysym
-    x_pos, y_pos = player_area.coords(player)
-
-    print(x_pos)
-    print(player_size)
-
-    if (key == "a" or key == "Left") and x_pos > 48: 
+    # x_pos, y_pos = player_area.coords(player)
+    
+    if (key == "a" or key == "Left") and player_size[0] > 0: # 48 
         player_area.move(player, -player_speed, 0)
-    elif (key == "d" or key == "Right") and x_pos < 1240:
+    elif (key == "d" or key == "Right") and player_size[2] < window_height:
         player_area.move(player, player_speed, 0)
     else:
         player_area.move(player, 0, 0)
