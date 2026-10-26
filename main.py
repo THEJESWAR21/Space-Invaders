@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+import winsound
 
 # DONE: Create the Ship and Make it Move
 # TODO: Create Smooth Movement / Delta Time
-# TODO: Shooting Mechanics
+# DONE: Shooting Mechanics
 # TODO: Enemies and its AI
 # TODO: Score / HighScore
 # TODO: Sounds
@@ -12,6 +13,8 @@ from tkinter import ttk
 root = tk.Tk()
 player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Ship.png") # 16x16 (RESIZED: 6.0x (96x96))
 bullet_img = tk.PhotoImage(file=r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Bullet.png')
+
+# fire_sound = r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Sounds\Fire_3.wav'
 
 win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -36,7 +39,7 @@ def config():
     return frm
 
 def main_area_draw(frm):
-    main_area = tk.Canvas(frm, bg="red", highlightthickness=0)
+    main_area = tk.Canvas(frm, bg="Black", highlightthickness=0)
     main_area.pack(side='bottom', fill=tk.BOTH, expand=True)
 
     return main_area
@@ -51,14 +54,15 @@ def player_draw(frm):
 
     x0 = player_cvw // 2
     y0 = player_cvh // 2
-   
-    player_area = tk.Canvas(frm, bg="lightgreen", height=player_cvh, highlightthickness=0)
+    player_area = tk.Canvas(frm, bg="Black", height=player_cvh, highlightthickness=0)
     player = player_area.create_image(x0,y0, image=player_img)
     # player_area.move(player, 609.6, 0)
    
     player_area.pack(side="bottom", fill=tk.X)
 
     return player_area, player
+
+
 
 def player_move(event, player_area, player, main_area, bullets):
     player_size = player_area.bbox(player)
@@ -75,6 +79,7 @@ def player_move(event, player_area, player, main_area, bullets):
     elif (key == 'space' or key == "up"):
         # player_shoot(main_area)
         player_shoot(main_area, bullets, player_size)
+        # winsound.PlaySound(fire_sound, winsound.SND_FILENAME | winsound.SND_ASYNC)
     else:
         player_area.move(player, 0, 0)
 
@@ -111,16 +116,7 @@ def move_bullet(main_area, bullets):
             main_area.delete(bullet)
             bullets.remove(bullet)
 
-
-    print(bullets)
-
     root.after(20, lambda : move_bullet(main_area, bullets))
-
-
-
-# def every_frame():
-#     print("Hello")
-#     root.after(5000, every_frame)
 
 def main():
     frm = config()
