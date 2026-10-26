@@ -17,6 +17,8 @@ scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
 
 player_speed = 15 
 
+bullets = 0
+
 def config():
     root.title("Space-Invaders")
 
@@ -31,6 +33,13 @@ def config():
     frm.pack(fill="both", expand=True)
 
     return frm
+
+def main_area_draw(frm):
+    main_area = tk.Canvas(frm, bg="red", highlightthickness=0)
+    main_area.pack(side='bottom', fill=tk.BOTH, expand=True)
+
+    return main_area
+
 
 def player_draw(frm):
     player_cvw, player_cvh = win_width, 80 # (1280,80) Player Canvas Size
@@ -55,7 +64,7 @@ def player_draw(frm):
 
     return player_area, player
 
-def player_move(event, player_area, player, main_area):
+def player_move(event, player_area, player, main_area, bullets):
     player_size = player_area.bbox(player)
     player_coords = player_area.coords(player)
     window_height = root.winfo_width()
@@ -67,47 +76,56 @@ def player_move(event, player_area, player, main_area):
         player_area.move(player, -player_speed, 0)
     elif (key == "d" or key == "Right") and player_size[2] < window_height:
         player_area.move(player, player_speed, 0)
-
-    elif (key == 'space' or key == 'up'):
-        player_shoot(player_area, player, player_size, main_area, player_coords)
+    elif (key == 'space' or key == "up"):
+        # player_shoot(main_area)
+        bullets += 1
+        player_shoot(main_area, bullets, player_size)
     else:
         player_area.move(player, 0, 0)
 
     return
 
-def main_area_draw(frm):
-    main_area = tk.Canvas(frm, bg="red", highlightthickness=0)
-    main_area.pack(side='bottom', fill=tk.BOTH, expand=True)
+def player_shoot(main_area, bullets, player_size):
+    # x0, y0, x1, y1 = player_size
+    bullet_size = 15
+    half_size = bullet_size // 2
 
-    return main_area
+    x_midpoint = (player_size[0] + player_size[2]) // 2
+    # x_midpoint , top_edge
+    top_edge = player_size[1] 
 
-def player_shoot(player_area, player, player_size, main_area, player_coords):
-    x0, y0, x1, y1 = player_size
+    x0 = x_midpoint - half_size
+    y0 = top_edge - bullet_size
+    x1 = x_midpoint + half_size
+    y1 = top_edge + 20 
 
-    # (x0 // 2 ) - 10
-    # y0 - 10
-    # (x1 // 2 ) + 10
-    # y1 + 10
-    
-    # (598, 16, 682, 64)
 
-    bullet = main_area.create_rectangle( x0 + 40,y0 + 575, x1 - 40, y1 + 555, fill="white")
+    print(main_area.winfo_height() - bullet_size)
+
+    offset = 605
+
+    # 625 - 605
+    while bullets > 0:
+        bullet = main_area.create_rectangle(x0 ,y0 + offset,x1,y1 + offset, fill='white', outline='white')
+        print(x0, y0 , x1, y1)
+        bullets -= 1
+
     root.update_idletasks()
-
     print(player_size)
-    print(player_coords)
+    return
 
 
-def every_frame():
-    print("Hello")
-    root.after(5000, every_frame)
+
+# def every_frame():
+#     print("Hello")
+#     root.after(5000, every_frame)
 
 def main():
     frm = config()
     player_area, player = player_draw(frm)
     main_area = main_area_draw(frm)
 
-    root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area))
+    root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
     # every_frame()
 
