@@ -57,6 +57,7 @@ def player_draw(frm):
 
 def player_move(event, player_area, player, main_area):
     player_size = player_area.bbox(player)
+    player_coords = player_area.coords(player)
     window_height = root.winfo_width()
 
     key = event.keysym
@@ -68,7 +69,7 @@ def player_move(event, player_area, player, main_area):
         player_area.move(player, player_speed, 0)
 
     elif (key == 'space' or key == 'up'):
-        player_shoot(player_area, player_size)
+        player_shoot(player_area, player, player_size, main_area, player_coords)
     else:
         player_area.move(player, 0, 0)
 
@@ -80,12 +81,21 @@ def main_area_draw(frm):
 
     return main_area
 
-def player_shoot(player_area, player_size):
+def player_shoot(player_area, player, player_size, main_area, player_coords):
+    x0, y0, x1, y1 = player_size
 
-    # player_area.create_rectangle(player_size[0], 0,player_size[2], 0)
+    # (x0 // 2 ) - 10
+    # y0 - 10
+    # (x1 // 2 ) + 10
+    # y1 + 10
+    
+    # (598, 16, 682, 64)
+
+    bullet = main_area.create_rectangle( x0 + 40,y0 + 575, x1 - 40, y1 + 555, fill="white")
     root.update_idletasks()
 
     print(player_size)
+    print(player_coords)
 
 
 def every_frame():
