@@ -47,7 +47,7 @@ def player_draw(frm):
     # Y1 = (player_cvh // 2) + (player_y // 2)
     # (610, 10, 670, 70)
    
-    player_area = tk.Canvas(frm, bg="lightgreen", height=player_cvh, highlightthickness=0) 
+    player_area = tk.Canvas(frm, bg="lightgreen", height=player_cvh, highlightthickness=0)
     player = player_area.create_image(x0,y0, image=player_img)
     # player_area.move(player, 609.6, 0)
    
@@ -55,7 +55,7 @@ def player_draw(frm):
 
     return player_area, player
 
-def player_move(event, player_area, player):
+def player_move(event, player_area, player, main_area):
     player_size = player_area.bbox(player)
     window_height = root.winfo_width()
 
@@ -66,10 +66,26 @@ def player_move(event, player_area, player):
         player_area.move(player, -player_speed, 0)
     elif (key == "d" or key == "Right") and player_size[2] < window_height:
         player_area.move(player, player_speed, 0)
+
+    elif (key == 'space' or key == 'up'):
+        player_shoot(player_area, player_size)
     else:
         player_area.move(player, 0, 0)
 
     return
+
+def main_area_draw(frm):
+    main_area = tk.Canvas(frm, bg="red", highlightthickness=0)
+    main_area.pack(side='bottom', fill=tk.BOTH, expand=True)
+
+    return main_area
+
+def player_shoot(player_area, player_size):
+
+    # player_area.create_rectangle(player_size[0], 0,player_size[2], 0)
+    root.update_idletasks()
+
+    print(player_size)
 
 
 def every_frame():
@@ -79,8 +95,9 @@ def every_frame():
 def main():
     frm = config()
     player_area, player = player_draw(frm)
+    main_area = main_area_draw(frm)
 
-    root.bind('<KeyPress>', lambda event: player_move(event, player_area, player))
+    root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area))
 
     # every_frame()
 
