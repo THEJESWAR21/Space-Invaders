@@ -5,6 +5,7 @@ import winsound
 # DONE: Create the Ship and Make it Move
 # TODO: Create Smooth Movement / Delta Time
 # DONE: Shooting Mechanics
+# TODO: RESIZE ASSETS TO FIT THE SCREEN
 # TODO: Enemies and its AI
 # TODO: Score / HighScore
 # TODO: Sounds
@@ -14,6 +15,12 @@ root = tk.Tk()
 player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Ship.png") # 16x16 (RESIZED: 6.0x (96x96))
 bullet_img = tk.PhotoImage(file=r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Bullet.png')
 
+# Enemies
+crab_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Crab-1.png")
+squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Squid-1.png")
+octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
+ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Alienship.png")
+
 # fire_sound = r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Sounds\Fire_3.wav'
 
 win_width, win_height = 1280, 720 # 960, 540
@@ -22,6 +29,9 @@ scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
 player_speed = 15 
 
 bullets = []
+squid = []
+
+debug_bg = ("Black", "Red", "lightgreen")
 
 def config():
     root.title("Space-Invaders")
@@ -33,13 +43,13 @@ def config():
     root.resizable(False, False) # Width, Height
     # root.configure(bg="black")
 
-    frm = tk.Frame(root, bg="Black") # ROOT FRAME
+    frm = tk.Frame(root, bg=debug_bg[0]) # ROOT FRAME
     frm.pack(fill="both", expand=True)
 
     return frm
 
 def main_area_draw(frm):
-    main_area = tk.Canvas(frm, bg="Black", highlightthickness=0)
+    main_area = tk.Canvas(frm, bg=debug_bg[1], highlightthickness=0)
     main_area.pack(side='bottom', fill=tk.BOTH, expand=True)
 
     return main_area
@@ -54,7 +64,7 @@ def player_draw(frm):
 
     x0 = player_cvw // 2
     y0 = player_cvh // 2
-    player_area = tk.Canvas(frm, bg="Black", height=player_cvh, highlightthickness=0)
+    player_area = tk.Canvas(frm, bg=debug_bg[2], height=player_cvh, highlightthickness=0)
     player = player_area.create_image(x0,y0, image=player_img)
     # player_area.move(player, 609.6, 0)
    
@@ -94,6 +104,7 @@ def player_shoot(main_area, bullets, player_size):
     x_midpoint = (player_size[0] + player_size[2]) // 2
     # x_midpoint , top_edge
     top_edge = player_size[1] 
+            
 
     # x0 = x_midpoint - half_size
     # y0 = top_edge - bullet_size
@@ -118,11 +129,27 @@ def move_bullet(main_area, bullets):
 
     root.after(20, lambda : move_bullet(main_area, bullets))
 
+def enemies_draw(main_area):
+
+    space_between = 70
+    x = (win_width // 2) - 400
+
+
+    ship_enemy = main_area.create_image(x,20, image=ship_img)
+    for i in range(11):
+        squid_enemy = main_area.create_image(x,50, image=squid_img)
+        squid.append(squid_enemy)
+        x += space_between
+
+    # main_area.delete(squid[6])
+
+
 def main():
     frm = config()
     player_area, player = player_draw(frm)
     main_area = main_area_draw(frm)
     move_bullet(main_area, bullets)
+    enemies_draw(main_area)
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
