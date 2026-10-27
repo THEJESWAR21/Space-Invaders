@@ -5,7 +5,7 @@ import winsound
 # DONE: Create the Ship and Make it Move
 # TODO: Create Smooth Movement / Delta Time
 # DONE: Shooting Mechanics
-# TODO: RESIZE ASSETS TO FIT THE SCREEN
+# DONE: RESIZE ASSETS TO FIT THE SCREEN
 # TODO: Enemies and its AI
 # TODO: Score / HighScore
 # TODO: Sounds
@@ -35,8 +35,6 @@ player_speed = 15
 x = 0
 
 bullets = []
-squids = []
-squids_coords = []
 
 debug_bg = ("Black", "Black", "Black")
 
@@ -142,7 +140,16 @@ def find_mid_x(y, space_between, enemy_count, x0, x1):
 
     return x
 
+def draw_rows(main_area, x, y, space_between, image_ref, enemy_count, enemy):
+    for _ in range(enemy_count):
+        squid_enemy = main_area.create_image(x, y, image=image_ref)
+        # squids.append(squid_enemy)
+        # squid_coords = main_area.coords(squid_enemy)
 
+        # squids_coords.append(squid_coords)
+        x += space_between
+
+    return
 
 def enemies_draw(main_area):
     space_between = 65
@@ -154,65 +161,35 @@ def enemies_draw(main_area):
     x1 = x0 + (space_between * (enemy_count-1))
     y = 0
 
+    # SQUID
+    # CRAB X 2
+    # OCTO X 2
 
     # ROW 1
     y = y + space_between_rows
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    for _ in range(enemy_count):
-        squid_enemy = main_area.create_image(x, y, image=squid_img)
-        squids.append(squid_enemy)
-        squid_coords = main_area.coords(squid_enemy)
-
-        squids_coords.append(squid_coords)
-        x += space_between
+    draw_rows(main_area, x, y, space_between, squid_img, enemy_count, 'squid')
 
     # ROW 2
     y = y + space_between_rows
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
-
-    for _ in range(enemy_count):
-        squid_enemy = main_area.create_image(x, y, image=crab_img)
-        squids.append(squid_enemy)
-        squid_coords = main_area.coords(squid_enemy)
-
-        squids_coords.append(squid_coords)
-        x += space_between
+    draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
 
     # ROW 3
     y = y + space_between_rows
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
-
-    for _ in range(enemy_count):
-        squid_enemy = main_area.create_image(x, y, image=crab_img)
-        squids.append(squid_enemy)
-        squid_coords = main_area.coords(squid_enemy)
-
-        squids_coords.append(squid_coords)
-        x += space_between
+    draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
 
     # ROW 4
     y = y + space_between_rows
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
-
-    for _ in range(enemy_count):
-        squid_enemy = main_area.create_image(x, y, image=octo_img)
-        squids.append(squid_enemy)
-        squid_coords = main_area.coords(squid_enemy)
-
-        squids_coords.append(squid_coords)
-        x += space_between
+    draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
 
     # ROW 4
     y = y + space_between_rows
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
 
-    for _ in range(enemy_count):
-        squid_enemy = main_area.create_image(x, y, image=octo_img)
-        squids.append(squid_enemy)
-        squid_coords = main_area.coords(squid_enemy)
-
-        squids_coords.append(squid_coords)
-        x += space_between
 
     # main_area.delete(squid[6])
 
