@@ -21,6 +21,11 @@ squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets
 octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
 ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Alienship.png")
 
+crabs = {}
+squids = {}
+octos = {}
+
+
 # fire_sound = r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Sounds\Fire_3.wav'
 
 win_width, win_height = 1280, 720 # 960, 540
@@ -131,36 +136,45 @@ def move_bullet(main_area, bullets):
     root.after(20, lambda : move_bullet(main_area, bullets))
 
 def enemies_draw(main_area):
+    row_1_y = 50
     space_between = 70
-    x = 290
 
-    for i in range(11):
-        squid_enemy = main_area.create_image(x,50, image=squid_img)
-        squids.append(squid_enemy)
-        squid_coords = main_area.coords(squid_enemy)
-        squids_coords.append(squid_coords)
-        x += space_between
+    enemy_count = 5
 
-    x0 = squids_coords[0][0]
-    y0 = squids_coords[0][1]
-    x1 = squids_coords[-1][0]
-    y1 = squids_coords[-1][1]
+    x0 = win_width // 2
+    x1 = x0 + (space_between * (enemy_count-1))
+
+    # x0 = x
+    # y0 = row_1_y
+    # x1 = x1
+    # y1 = row_1_y
     
 
-    x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y0 + y1) / 2)
+    x_midpoint, y_midpoint = ((x0 + x1) / 2), ((row_1_y + row_1_y) / 2)
     # (x0, y0) -> (x_midpoint, y_midpoint)
-    distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - y1) ** 2)) ** 0.5
+    distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - row_1_y) ** 2)) ** 0.5
 
     x = (win_width // 2) - distance
     x_midpoint = (1340 - 640 ) // 2
-    print(x)
+
+
+    # ROW 1
+    for i in range(enemy_count):
+        squid_enemy = main_area.create_image(x, row_1_y, image=squid_img)
+        squids.append(squid_enemy)
+        squid_coords = main_area.coords(squid_enemy)
+
+        squids_coords.append(squid_coords)
+        x += space_between
 
 # (616, 26, 664, 74)
 # (1316, 26, 1364, 74)
 
     # main_area.delete(squid[6])
     print(squids)
+    print(squids_coords)
 
+    print(x)
 
 def main():
     frm = config()
