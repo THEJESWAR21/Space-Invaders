@@ -16,7 +16,7 @@ player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Asset
 bullet_img = tk.PhotoImage(file=r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Bullet.png')
 
 # Enemies
-crab_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Crab-1.png")
+crab_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Crab-1.png") # 4.0x
 squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Squid-1.png")
 octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
 ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Alienship.png")
@@ -38,7 +38,7 @@ bullets = []
 squids = []
 squids_coords = []
 
-debug_bg = ("Black", "Red", "lightgreen")
+debug_bg = ("Black", "Black", "Black")
 
 def config():
     root.title("Space-Invaders")
@@ -135,46 +135,86 @@ def move_bullet(main_area, bullets):
             bullets.remove(bullet)
     root.after(20, lambda : move_bullet(main_area, bullets))
 
-def enemies_draw(main_area):
-    row_1_y = 50
-    space_between = 70
+def find_mid_x(y, space_between, enemy_count, x0, x1):
+    x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y + y) / 2)
+    distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - y) ** 2)) ** 0.5
+    x = (win_width // 2) - distance
 
-    enemy_count = 5
+    return x
+
+
+
+def enemies_draw(main_area):
+    space_between = 65
+    space_between_rows = 50
+
+    enemy_count = 11
 
     x0 = win_width // 2
     x1 = x0 + (space_between * (enemy_count-1))
-
-    # x0 = x
-    # y0 = row_1_y
-    # x1 = x1
-    # y1 = row_1_y
-    
-
-    x_midpoint, y_midpoint = ((x0 + x1) / 2), ((row_1_y + row_1_y) / 2)
-    # (x0, y0) -> (x_midpoint, y_midpoint)
-    distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - row_1_y) ** 2)) ** 0.5
-
-    x = (win_width // 2) - distance
-    x_midpoint = (1340 - 640 ) // 2
+    y = 0
 
 
     # ROW 1
-    for i in range(enemy_count):
-        squid_enemy = main_area.create_image(x, row_1_y, image=squid_img)
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    for _ in range(enemy_count):
+        squid_enemy = main_area.create_image(x, y, image=squid_img)
         squids.append(squid_enemy)
         squid_coords = main_area.coords(squid_enemy)
 
         squids_coords.append(squid_coords)
         x += space_between
 
-# (616, 26, 664, 74)
-# (1316, 26, 1364, 74)
+    # ROW 2
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+
+    for _ in range(enemy_count):
+        squid_enemy = main_area.create_image(x, y, image=crab_img)
+        squids.append(squid_enemy)
+        squid_coords = main_area.coords(squid_enemy)
+
+        squids_coords.append(squid_coords)
+        x += space_between
+
+    # ROW 3
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+
+    for _ in range(enemy_count):
+        squid_enemy = main_area.create_image(x, y, image=crab_img)
+        squids.append(squid_enemy)
+        squid_coords = main_area.coords(squid_enemy)
+
+        squids_coords.append(squid_coords)
+        x += space_between
+
+    # ROW 4
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+
+    for _ in range(enemy_count):
+        squid_enemy = main_area.create_image(x, y, image=octo_img)
+        squids.append(squid_enemy)
+        squid_coords = main_area.coords(squid_enemy)
+
+        squids_coords.append(squid_coords)
+        x += space_between
+
+    # ROW 4
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+
+    for _ in range(enemy_count):
+        squid_enemy = main_area.create_image(x, y, image=octo_img)
+        squids.append(squid_enemy)
+        squid_coords = main_area.coords(squid_enemy)
+
+        squids_coords.append(squid_coords)
+        x += space_between
 
     # main_area.delete(squid[6])
-    print(squids)
-    print(squids_coords)
-
-    print(x)
 
 def main():
     frm = config()
