@@ -30,7 +30,8 @@ player_speed = 15
 x = 0
 
 bullets = []
-squid = []
+squids = []
+squids_coords = []
 
 debug_bg = ("Black", "Red", "lightgreen")
 
@@ -131,34 +132,34 @@ def move_bullet(main_area, bullets):
 
 def enemies_draw(main_area):
     space_between = 70
-    x = 315
-    for i in range(10):
+    x = 290
+
+    for i in range(11):
         squid_enemy = main_area.create_image(x,50, image=squid_img)
+        squids.append(squid_enemy)
         squid_coords = main_area.coords(squid_enemy)
-        squid.append(squid_coords)
+        squids_coords.append(squid_coords)
         x += space_between
 
+    x0 = squids_coords[0][0]
+    y0 = squids_coords[0][1]
+    x1 = squids_coords[-1][0]
+    y1 = squids_coords[-1][1]
+    
 
-    # x0 = squid_coords[0][0]
-    # y0 = squid_coords[0][1]
-    # x1 = squid_coords[-1][0]
-    # y1 = squid_coords[-1][1]
-    #
-    # x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y0 + y1) / 2)
-    # # (x0, y0) -> (x_midpoint, y_midpoint)
-    # distance = ((x_midpoint - x0) ** 2) + ((y_midpoint - y1) ** 2) ** 0.5
-    #
-    # x = (win_width // 2) - distance
-    #
-    # main_area.coords(squid_enemy, x, 50)
+    x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y0 + y1) / 2)
+    # (x0, y0) -> (x_midpoint, y_midpoint)
+    distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - y1) ** 2)) ** 0.5
 
-    # x_midpoint = (1340 - 640 ) // 2
+    x = (win_width // 2) - distance
+    x_midpoint = (1340 - 640 ) // 2
+    print(x)
 
 # (616, 26, 664, 74)
 # (1316, 26, 1364, 74)
 
     # main_area.delete(squid[6])
-    print(squid)
+    print(squids)
 
 
 def main():
