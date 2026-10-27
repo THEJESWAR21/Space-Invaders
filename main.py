@@ -27,6 +27,7 @@ win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
 
 player_speed = 15 
+x = 0
 
 bullets = []
 squid = []
@@ -126,22 +127,38 @@ def move_bullet(main_area, bullets):
         if b_coords[3]  < 0:
             main_area.delete(bullet)
             bullets.remove(bullet)
-
     root.after(20, lambda : move_bullet(main_area, bullets))
 
 def enemies_draw(main_area):
-
     space_between = 70
-    x = (win_width // 2) - 400
-
-
-    ship_enemy = main_area.create_image(x,20, image=ship_img)
-    for i in range(11):
+    x = 315
+    for i in range(10):
         squid_enemy = main_area.create_image(x,50, image=squid_img)
-        squid.append(squid_enemy)
+        squid_coords = main_area.coords(squid_enemy)
+        squid.append(squid_coords)
         x += space_between
 
+
+    # x0 = squid_coords[0][0]
+    # y0 = squid_coords[0][1]
+    # x1 = squid_coords[-1][0]
+    # y1 = squid_coords[-1][1]
+    #
+    # x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y0 + y1) / 2)
+    # # (x0, y0) -> (x_midpoint, y_midpoint)
+    # distance = ((x_midpoint - x0) ** 2) + ((y_midpoint - y1) ** 2) ** 0.5
+    #
+    # x = (win_width // 2) - distance
+    #
+    # main_area.coords(squid_enemy, x, 50)
+
+    # x_midpoint = (1340 - 640 ) // 2
+
+# (616, 26, 664, 74)
+# (1316, 26, 1364, 74)
+
     # main_area.delete(squid[6])
+    print(squid)
 
 
 def main():
