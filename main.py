@@ -212,33 +212,40 @@ def border_dectector(main_area):
     enemies_coords_values = list(enemies_coords.values())
     enemies_coords_values.sort()
 
-    closest_to_right = enemies_coords_values[-1][0] + 40
-    closest_to_left = enemies_coords_values[0][0] - 40
+    # closest_to_right = enemies_coords_values[-1][0] + 40
+    # closest_to_left = enemies_coords_values[0][0] - 40
 
-    right_wall_detector = main_area.create_rectangle(closest_to_right, 0, closest_to_right + 5, win_height, fill="red")
-    left_wall_detector = main_area.create_rectangle(closest_to_left, 0, closest_to_left + 5, win_height, fill="red")
+    # right_wall_detector = main_area.create_rectangle(closest_to_right, 0, closest_to_right + 5, win_height, fill="red")
+    # left_wall_detector = main_area.create_rectangle(closest_to_left, 0, closest_to_left + 5, win_height, fill="red")
+
+    right_wall_detector = main_area.create_rectangle(0, 0, 0, 0, fill="red")
+    # left_wall_detector = main_area.create_rectangle(closest_to_left, 0, closest_to_left + 5, win_height, fill="red")
     
-    left_wall_coords = main_area.coords(left_wall_detector)
+    # left_wall_coords = main_area.coords(left_wall_detector)
 
 
     # elif left_wall_coords[0] <= 0:
     #     print("HIT lEFT WALL")
 
+    left_wall_detector = 0
+
     return right_wall_detector, left_wall_detector
 
 
 def move_enemies(main_area, right_wall_det):
+    enemies_coords_values = list(enemies_coords.values())
+    enemies_coords_values.sort()
+
+    closest_to_right = enemies_coords_values[-1][0] + 40
+    closest_to_left = enemies_coords_values[0][0] - 40
+
+    main_area.coords(right_wall_det, closest_to_right, 0, closest_to_right + 5, win_height)
 
     moving_right = True
     hit_wall = False
 
     main_area.move(right_wall_det, 50, 0)
 
-    enemies_coords_values = list(enemies_coords.values())
-    enemies_coords_values.sort()
-
-    closest_to_right = enemies_coords_values[-1][0] + 100
-    closest_to_left = enemies_coords_values[0][0] - 40
 
     right_wall_coords = main_area.coords(right_wall_det)
 
@@ -258,7 +265,6 @@ def move_enemies(main_area, right_wall_det):
             moving_right = False
             hit_wall = False
 
-    main_area.coords(right_wall_det, closest_to_right, 0, closest_to_right + 5, win_height)
 
 
     root.after(1000, lambda: move_enemies(main_area, right_wall_det))
