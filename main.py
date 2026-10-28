@@ -34,7 +34,7 @@ bullets = []
 
 debug_bg = ("Black", "Black", "Black")
 
-squids, crabs, octos = {}, {}, {}
+# squids, crabs, octos = {}, {}, {}
 enemies_coords = {}
 
 def config():
@@ -146,13 +146,15 @@ def draw_rows(main_area, x, y, space_between, image_ref, enemy_count, enemy_type
         enemy = main_area.create_image(x, y, image=image_ref)
         coords = main_area.coords(enemy)
 
-        match (enemy_type):
-            case 'squid':
-                squids[enemy] = coords
-            case 'crab':
-                crabs[enemy] = coords
-            case 'octo':
-                octos[enemy] = coords
+        enemies_coords[enemy] = coords
+        # match (enemy_type):
+        #     case 'squid':
+        #         squids[enemy] = coords
+        #     case 'crab':
+        #         crabs[enemy] = coords
+        #     case 'octo':
+        #         octos[enemy] = coords
+
         # print(f'{enemy_type}: {enemy: [enemy_coords]}')
 
         x += space_between
@@ -199,13 +201,29 @@ def enemies_draw(main_area):
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
     draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
 
-    enemies_coords['squids'] = squids
-    enemies_coords['crabs'] = crabs
-    enemies_coords['octos'] = octos
+
+    # enemies_coords['squids'] = squids
+    # enemies_coords['crabs'] = crabs
+    # enemies_coords['octos'] = octos
 
 
 
     # main_area.delete(squid[6])
+
+def move_enemies(main_area):
+
+
+    for enemy_id, enemy_coords in enemies_coords.items():
+        # main_area.move(enemy_id, enemy_coords[0] + 50, enemy_coords[1])
+        main_area.move(enemy_id, 50, 0)
+
+        enemies_coords[enemy_id] = main_area.coords(enemy_id)
+
+        print(enemies_coords)
+
+
+    root.after(1100, lambda: move_enemies(main_area))
+
 
 def main():
     frm = config()
@@ -218,8 +236,9 @@ def main():
     # print(crabs)
     # print(octos)
 
+    # pprint(enemies_coords)
+    move_enemies(main_area)
 
-    pprint(enemies_coords)
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
