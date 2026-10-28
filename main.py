@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import winsound
+from pprint import pprint
 
 # DONE: Create the Ship and Make it Move
 # TODO: Create Smooth Movement / Delta Time
@@ -21,11 +22,6 @@ squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets
 octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
 ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Alienship.png")
 
-crabs = {}
-squids = {}
-octos = {}
-
-
 # fire_sound = r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Sounds\Fire_3.wav'
 
 win_width, win_height = 1280, 720 # 960, 540
@@ -37,6 +33,9 @@ x = 0
 bullets = []
 
 debug_bg = ("Black", "Black", "Black")
+
+squids, crabs, octos = {}, {}, {}
+enemies_coords = {}
 
 def config():
     root.title("Space-Invaders")
@@ -140,14 +139,24 @@ def find_mid_x(y, space_between, enemy_count, x0, x1):
 
     return x
 
-def draw_rows(main_area, x, y, space_between, image_ref, enemy_count, enemy):
-    for _ in range(enemy_count):
-        squid_enemy = main_area.create_image(x, y, image=image_ref)
-        # squids.append(squid_enemy)
-        # squid_coords = main_area.coords(squid_enemy)
+# enemies_coords = {'squid': {}, 'crab': {}, 'octo': {}}
 
-        # squids_coords.append(squid_coords)
+def draw_rows(main_area, x, y, space_between, image_ref, enemy_count, enemy_type):
+    for _ in range(enemy_count):
+        enemy = main_area.create_image(x, y, image=image_ref)
+        coords = main_area.coords(enemy)
+
+        match (enemy_type):
+            case 'squid':
+                squids[enemy] = coords
+            case 'crab':
+                crabs[enemy] = coords
+            case 'octo':
+                octos[enemy] = coords
+        # print(f'{enemy_type}: {enemy: [enemy_coords]}')
+
         x += space_between
+
 
     return
 
@@ -185,10 +194,15 @@ def enemies_draw(main_area):
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
     draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
 
-    # ROW 4
+    # ROW 5
     y = y + space_between_rows
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
     draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
+
+    enemies_coords['squids'] = squids
+    enemies_coords['crabs'] = crabs
+    enemies_coords['octos'] = octos
+
 
 
     # main_area.delete(squid[6])
@@ -199,6 +213,13 @@ def main():
     main_area = main_area_draw(frm)
     move_bullet(main_area, bullets)
     enemies_draw(main_area)
+
+    # print(squids)
+    # print(crabs)
+    # print(octos)
+
+
+    pprint(enemies_coords)
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
