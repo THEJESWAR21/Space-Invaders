@@ -34,7 +34,7 @@ bullets = []
 
 debug_bg = ("Black", "Black", "Black")
 
-# squids, crabs, octos = {}, {}, {}
+squids, crabs, octos = {}, {}, {}
 enemies_coords = {}
 
 def config():
@@ -132,6 +132,7 @@ def move_bullet(main_area, bullets):
             bullets.remove(bullet)
     root.after(20, lambda : move_bullet(main_area, bullets))
 
+
 def find_mid_x(y, space_between, enemy_count, x0, x1):
     x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y + y) / 2)
     distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - y) ** 2)) ** 0.5
@@ -158,7 +159,6 @@ def draw_rows(main_area, x, y, space_between, image_ref, enemy_count, enemy_type
         # print(f'{enemy_type}: {enemy: [enemy_coords]}')
 
         x += space_between
-
 
     return
 
@@ -206,23 +206,63 @@ def enemies_draw(main_area):
     # enemies_coords['crabs'] = crabs
     # enemies_coords['octos'] = octos
 
-
-
     # main_area.delete(squid[6])
 
-def move_enemies(main_area):
+def border_dectector(main_area):
+    enemies_coords_values = list(enemies_coords.values())
+    enemies_coords_values.sort()
+
+    closest_to_right = enemies_coords_values[-1][0] + 40
+    closest_to_left = enemies_coords_values[0][0] - 40
+
+    right_wall_detector = main_area.create_rectangle(closest_to_right, 0, closest_to_right + 5, win_height, fill="red")
+    left_wall_detector = main_area.create_rectangle(closest_to_left, 0, closest_to_left + 5, win_height, fill="red")
+    
+    left_wall_coords = main_area.coords(left_wall_detector)
+
+
+    # elif left_wall_coords[0] <= 0:
+    #     print("HIT lEFT WALL")
+
+    return right_wall_detector, left_wall_detector
+
+
+def move_enemies(main_area, right_wall_det):
+
+    moving_right = True
+    hit_wall = False
+
+    main_area.move(right_wall_det, 50, 0)
+
+    enemies_coords_values = list(enemies_coords.values())
+    enemies_coords_values.sort()
+
+    closest_to_right = enemies_coords_values[-1][0] + 100
+    closest_to_left = enemies_coords_values[0][0] - 40
+
+    right_wall_coords = main_area.coords(right_wall_det)
+
+    if right_wall_coords[2] >= 1280:
+        print("HIT RIGHT WALL")
 
 
     for enemy_id, enemy_coords in enemies_coords.items():
-        # main_area.move(enemy_id, enemy_coords[0] + 50, enemy_coords[1])
-        main_area.move(enemy_id, 50, 0)
+        if moving_right == True and hit_wall == False:
+            main_area.move(enemy_id, 50, 0)
+            enemies_coords[enemy_id] = main_area.coords(enemy_id)
+        else:
+            main_area.move(enemy_id, -50, 0)
+            enemies_coords[enemy_id] = main_area.coords(enemy_id)
 
-        enemies_coords[enemy_id] = main_area.coords(enemy_id)
+        if hit_wall == True:
+            moving_right = False
+            hit_wall = False
 
-        print(enemies_coords)
+    main_area.coords(right_wall_det, closest_to_right, 0, closest_to_right + 5, win_height)
 
 
-    root.after(1100, lambda: move_enemies(main_area))
+    root.after(1000, lambda: move_enemies(main_area, right_wall_det))
+
 
 
 def main():
@@ -231,13 +271,15 @@ def main():
     main_area = main_area_draw(frm)
     move_bullet(main_area, bullets)
     enemies_draw(main_area)
+    right_wall_det, left_wall_det = border_dectector(main_area)
+    move_enemies(main_area, right_wall_det)
 
     # print(squids)
     # print(crabs)
     # print(octos)
 
     # pprint(enemies_coords)
-    move_enemies(main_area)
+    # move_enemies(main_area)
 
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
