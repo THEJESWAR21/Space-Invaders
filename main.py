@@ -37,6 +37,7 @@ debug_bg = ("Black", "Black", "Black")
 squids, crabs, octos = {}, {}, {}
 enemies_coords = {}
 
+
 def config():
     root.title("Space-Invaders")
 
@@ -201,7 +202,6 @@ def enemies_draw(main_area):
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
     draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
 
-
     # enemies_coords['squids'] = squids
     # enemies_coords['crabs'] = crabs
     # enemies_coords['octos'] = octos
@@ -209,66 +209,45 @@ def enemies_draw(main_area):
     # main_area.delete(squid[6])
 
 def border_dectector(main_area):
-    enemies_coords_values = list(enemies_coords.values())
-    enemies_coords_values.sort()
-
-    # closest_to_right = enemies_coords_values[-1][0] + 40
-    # closest_to_left = enemies_coords_values[0][0] - 40
-
-    # right_wall_detector = main_area.create_rectangle(closest_to_right, 0, closest_to_right + 5, win_height, fill="red")
-    # left_wall_detector = main_area.create_rectangle(closest_to_left, 0, closest_to_left + 5, win_height, fill="red")
-
     right_wall_detector = main_area.create_rectangle(0, 0, 0, 0, fill="red")
-    # left_wall_detector = main_area.create_rectangle(closest_to_left, 0, closest_to_left + 5, win_height, fill="red")
-    
-    # left_wall_coords = main_area.coords(left_wall_detector)
-
-
-    # elif left_wall_coords[0] <= 0:
-    #     print("HIT lEFT WALL")
-
-    left_wall_detector = 0
+    left_wall_detector = main_area.create_rectangle(0, 0, 0, 0, fill="red")
 
     return right_wall_detector, left_wall_detector
 
-
-def move_enemies(main_area, right_wall_det):
+def move_enemies(main_area, right_wall_det, left_wall_det, direction):
+    hit_wall = False
     enemies_coords_values = list(enemies_coords.values())
     enemies_coords_values.sort()
 
-    closest_to_right = enemies_coords_values[-1][0] + 40
+    closest_to_right = enemies_coords_values[-1][0] + 70
     closest_to_left = enemies_coords_values[0][0] - 40
-
-    main_area.coords(right_wall_det, closest_to_right, 0, closest_to_right + 5, win_height)
-
-    moving_right = True
-    hit_wall = False
-
-    main_area.move(right_wall_det, 50, 0)
-
 
     right_wall_coords = main_area.coords(right_wall_det)
 
-    if right_wall_coords[2] >= 1280:
-        print("HIT RIGHT WALL")
+    if right_wall_coords[2] >= 1240:
+        print("Hit")
+        hit_wall = True
 
+    if hit_wall == True:
+        direction += 1
 
     for enemy_id, enemy_coords in enemies_coords.items():
-        if moving_right == True and hit_wall == False:
+        if direction % 2 == 0:
             main_area.move(enemy_id, 50, 0)
-            enemies_coords[enemy_id] = main_area.coords(enemy_id)
         else:
             main_area.move(enemy_id, -50, 0)
-            enemies_coords[enemy_id] = main_area.coords(enemy_id)
 
-        if hit_wall == True:
-            moving_right = False
-            hit_wall = False
+        enemies_coords[enemy_id] = main_area.coords(enemy_id)
+
+    if direction % 2 == 0:
+        main_area.coords(right_wall_det, closest_to_right, 0, closest_to_right + 5, win_height)
+        main_area.coords(left_wall_det, closest_to_left, 0, closest_to_left + 5, win_height)
+    else:
+        main_area.coords(right_wall_det, -closest_to_right, 0, -closest_to_right + 5, win_height)
+        main_area.coords(left_wall_det, -closest_to_left, 0, -closest_to_left + 5, win_height)
 
 
-
-    root.after(1000, lambda: move_enemies(main_area, right_wall_det))
-
+    root.after(1000, lambda: move_enemies(main_area, right_wall_det, left_wall_det, direction))
 
 
 def main():
@@ -277,8 +256,11 @@ def main():
     main_area = main_area_draw(frm)
     move_bullet(main_area, bullets)
     enemies_draw(main_area)
+
     right_wall_det, left_wall_det = border_dectector(main_area)
-    move_enemies(main_area, right_wall_det)
+
+    direction = 0
+    move_enemies(main_area, right_wall_det, left_wall_det, direction)
 
     # print(squids)
     # print(crabs)
@@ -290,9 +272,23 @@ def main():
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
+
     # every_frame()
 
 if __name__ == "__main__":
     main()
     root.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
         
