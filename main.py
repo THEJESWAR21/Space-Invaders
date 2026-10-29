@@ -207,10 +207,11 @@ def enemies_draw(main_area):
     # enemies_coords['octos'] = octos
 
     # main_area.delete(squid[6])
-
-def move_enemies(main_area, direction):
+shift = False
+def move_enemies(main_area, direction, enemy_speed):
+    shift = False
     hit_wall = False
-    step = 50
+    step = 40
 
     enemies_coords_values = list(enemies_coords.values())
     enemies_coords_values.sort()
@@ -218,23 +219,24 @@ def move_enemies(main_area, direction):
     closest_to_right = enemies_coords_values[-1][0]
     closest_to_left = enemies_coords_values[0][0] 
 
-
     if direction == 1 and closest_to_right + step >= 1280:
         direction = -1
+        shift = True
 
     elif direction == -1 and closest_to_left - step <= 0:
         direction = 1
+        shift = True
 
     for enemy_id, enemy_coords in enemies_coords.items():
-        main_area.move(enemy_id, step * direction, 0)
+        if shift == True:
+            main_area.move(enemy_id, 0, 50)
+        else:
+            main_area.move(enemy_id, step * direction, 0)
 
         enemies_coords[enemy_id] = main_area.coords(enemy_id)
 
-    closest_to_right = enemies_coords_values[-1][0] + 100
-    closest_to_left = enemies_coords_values[0][0]  + 40
 
-
-    root.after(1000, lambda: move_enemies(main_area, direction))
+    root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
 
 
 def main():
@@ -245,7 +247,8 @@ def main():
     enemies_draw(main_area)
 
     direction = 1
-    move_enemies(main_area, direction)
+    enemy_speed = 100
+    move_enemies(main_area, direction, enemy_speed)
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
