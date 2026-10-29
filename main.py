@@ -208,46 +208,33 @@ def enemies_draw(main_area):
 
     # main_area.delete(squid[6])
 
-def border_dectector(main_area):
-    right_wall_detector = main_area.create_rectangle(0, 0, 0, 0, fill="red")
-    left_wall_detector = main_area.create_rectangle(0, 0, 0, 0, fill="red")
-
-    return right_wall_detector, left_wall_detector
-
-def move_enemies(main_area, right_wall_det, left_wall_det, direction):
+def move_enemies(main_area, direction):
     hit_wall = False
+    step = 50
+
     enemies_coords_values = list(enemies_coords.values())
     enemies_coords_values.sort()
 
-    closest_to_right = enemies_coords_values[-1][0] + 70
-    closest_to_left = enemies_coords_values[0][0] - 40
+    closest_to_right = enemies_coords_values[-1][0]
+    closest_to_left = enemies_coords_values[0][0] 
 
-    right_wall_coords = main_area.coords(right_wall_det)
 
-    if right_wall_coords[2] >= 1240:
-        print("Hit")
-        hit_wall = True
+    if direction == 1 and closest_to_right + step >= 1280:
+        direction = -1
 
-    if hit_wall == True:
-        direction += 1
+    elif direction == -1 and closest_to_left - step <= 0:
+        direction = 1
 
     for enemy_id, enemy_coords in enemies_coords.items():
-        if direction % 2 == 0:
-            main_area.move(enemy_id, 50, 0)
-        else:
-            main_area.move(enemy_id, -50, 0)
+        main_area.move(enemy_id, step * direction, 0)
 
         enemies_coords[enemy_id] = main_area.coords(enemy_id)
 
-    if direction % 2 == 0:
-        main_area.coords(right_wall_det, closest_to_right, 0, closest_to_right + 5, win_height)
-        main_area.coords(left_wall_det, closest_to_left, 0, closest_to_left + 5, win_height)
-    else:
-        main_area.coords(right_wall_det, -closest_to_right, 0, -closest_to_right + 5, win_height)
-        main_area.coords(left_wall_det, -closest_to_left, 0, -closest_to_left + 5, win_height)
+    closest_to_right = enemies_coords_values[-1][0] + 100
+    closest_to_left = enemies_coords_values[0][0]  + 40
 
 
-    root.after(1000, lambda: move_enemies(main_area, right_wall_det, left_wall_det, direction))
+    root.after(1000, lambda: move_enemies(main_area, direction))
 
 
 def main():
@@ -257,18 +244,8 @@ def main():
     move_bullet(main_area, bullets)
     enemies_draw(main_area)
 
-    right_wall_det, left_wall_det = border_dectector(main_area)
-
-    direction = 0
-    move_enemies(main_area, right_wall_det, left_wall_det, direction)
-
-    # print(squids)
-    # print(crabs)
-    # print(octos)
-
-    # pprint(enemies_coords)
-    # move_enemies(main_area)
-
+    direction = 1
+    move_enemies(main_area, direction)
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
@@ -278,17 +255,3 @@ def main():
 if __name__ == "__main__":
     main()
     root.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
