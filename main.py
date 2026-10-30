@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from pprint import pprint
 import winsound
+import time
 
 # DONE: Create the Ship and Make it Move
 # TODO: Create Smooth Movement / Delta Time
@@ -10,6 +11,8 @@ import winsound
 # DONE: Enemies and its AI
 # TODO: Score / HighScore
 # TODO: Sounds
+# TODO: GAME LOOP
+# TODO: PLAYER LIFES
 
 # RESEARCH: GARBAGE COLLECTION
 
@@ -58,7 +61,6 @@ def main_area_draw(frm):
 
     return main_area
 
-
 def player_draw(frm):
     player_cvw, player_cvh = win_width, 80 # (1280,80) Player Canvas Size
     # MidPoint of Canvas: 1280 // 2 x 80 // 2 = 640 x 40
@@ -92,8 +94,6 @@ def player_move(event, player_area, player, main_area, bullets):
     else:
         player_area.move(player, 0, 0)
 
-    return
-
 
 def player_shoot(main_area, bullets, player_size):
     bullet_size = 15
@@ -106,17 +106,17 @@ def player_shoot(main_area, bullets, player_size):
     y1 = top_edge + 20 
     offset = 605
 
-    bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img)
-    bullets.append(bullet)
+    if len(bullets) < 1:
+        bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img)
+        bullets.append(bullet)
 
 
 def move_bullet(main_area, bullets):
-    overlap_found = []
     for bullet in bullets:
-        main_area.move(bullet, 0, -10)
+        main_area.move(bullet, 0, -15)
         b_coords = main_area.bbox(bullet) 
 
-        if b_coords[3]  < 0:
+        if b_coords[3] < 0:
             main_area.delete(bullet)
             bullets.remove(bullet)
 
@@ -125,6 +125,7 @@ def move_bullet(main_area, bullets):
 
 def find_mid_x(y, space_between, enemy_count, x0, x1):
     x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y + y) / 2)
+
     distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - y) ** 2)) ** 0.5
     x = (win_width // 2) - distance
 
@@ -177,7 +178,7 @@ def enemies_draw(main_area):
     draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
 
     # main_area.delete(squid[6])
-shift = False
+
 def move_enemies(main_area, direction, enemy_speed):
     shift = False
     hit_wall = False
@@ -222,10 +223,12 @@ def bullet_overlapping(main_area):
             enemies_coords.pop(bullet_overlap[0])
             main_area.delete(bullet_overlap[0])
 
+            bullets.remove(bullet_overlap[1])
+            main_area.delete(bullet_overlap[1])
+
     # print(overlap)
 
     root.after(10, lambda: bullet_overlapping(main_area))
-
 
 def main():
     direction = 1
