@@ -111,6 +111,7 @@ def player_shoot(main_area, bullets, player_size):
 
 
 def move_bullet(main_area, bullets):
+    overlap_found = []
     for bullet in bullets:
         main_area.move(bullet, 0, -10)
         b_coords = main_area.bbox(bullet) 
@@ -118,6 +119,7 @@ def move_bullet(main_area, bullets):
         if b_coords[3]  < 0:
             main_area.delete(bullet)
             bullets.remove(bullet)
+
     root.after(20, lambda : move_bullet(main_area, bullets))
 
 
@@ -201,22 +203,42 @@ def move_enemies(main_area, direction, enemy_speed):
         else:
             main_area.move(enemy_id, step * direction, 0)
 
+
         enemies_coords[enemy_id] = main_area.coords(enemy_id)
 
     root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
 
+def bullet_overlapping(main_area):
+    overlap = []
+
+    for enemy_id in list(enemies_coords.keys()):
+        enemy_bbox = main_area.bbox(enemy_id)
+
+        bullet_overlap = main_area.find_overlapping(*enemy_bbox)  # (51, 0)
+        # print(len(bullet_overlap))
+
+        if len(bullet_overlap) > 1:
+            print(bullet_overlap)
+            enemies_coords.pop(bullet_overlap[0])
+            main_area.delete(bullet_overlap[0])
+
+    # print(overlap)
+
+    root.after(10, lambda: bullet_overlapping(main_area))
+
 
 def main():
     direction = 1
-    enemy_speed = 100
+    enemy_speed = 800
 
     frm = config()
     player_area, player = player_draw(frm)
     main_area = main_area_draw(frm)
-    move_bullet(main_area, bullets)
-    enemies_draw(main_area)
 
+    enemies_draw(main_area)
+    bullet_overlapping(main_area)
     move_enemies(main_area, direction, enemy_speed)
+    move_bullet(main_area, bullets)
 
     root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
 
