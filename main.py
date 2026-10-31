@@ -1,13 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 from pprint import pprint
+import random
 
 # DONE: Create the Ship and Make it Move
 # DONE: Create Smooth Movement / Delta Time
 # DONE: Shooting Mechanics
 # DONE: RESIZE ASSETS TO FIT THE SCREEN
 # DONE: Enemies and its AI
-# TODO: Score / HighScore
+# TODO: Score
 # TODO: ENEMY SHOOTING
 # TODO: GAME LOOP
 # TODO: PLAYER LIFES
@@ -29,8 +30,6 @@ ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\
 
 win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
-
-x = 0
 
 
 debug_bg = ("Black", "Black", "Black")
@@ -89,15 +88,6 @@ def player_move(player_area, player, main_area, bullets):
     player_coords = player_area.coords(player)
     window_height = root.winfo_width()
 
-    # if (key == "a" or key == "Left")  and player_size[0] > 0: # 48 
-    #     player_area.move(player, -player_speed, 0)
-    # elif (key == "d" or key == "Right") and player_size[2] < window_height:
-    #     player_area.move(player, player_speed, 0)
-    # elif (key == 'space' or key == "up"):
-    #     player_shoot(main_area, bullets, player_size)
-    # else:
-    #     player_area.move(player, 0, 0)
-
     if ('a' in pressed_keys) and (player_size[0] > 0):
         dx = -player_speed
     elif ('d' in pressed_keys) and (player_size[2] < window_height):
@@ -106,8 +96,7 @@ def player_move(player_area, player, main_area, bullets):
     if dx != 0 or dy != 0:
         player_area.move(player, dx, dy)
 
-
-    root.after(17, lambda: player_move(player_area, player, main_area, bullets))
+    root.after(30, lambda: player_move(player_area, player, main_area, bullets))
 
 
 
@@ -123,10 +112,9 @@ def player_shoot(event, main_area, bullets, player, player_area):
     y1 = top_edge + 20 
     offset = 605
 
-    # if len(bullets) < 1:
-    bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img, tag="bullet")
-    bullets.append(bullet)
-
+    if len(bullets) < 1:
+        bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img, tag="bullet")
+        bullets.append(bullet)
 
 
 def move_bullet(main_area, bullets):
@@ -143,7 +131,6 @@ def move_bullet(main_area, bullets):
 
 def find_mid_x(y, space_between, enemy_count, x0, x1):
     x_midpoint, y_midpoint = ((x0 + x1) / 2), ((y + y) / 2)
-
     distance = (((x_midpoint - x0) ** 2) + ((y_midpoint - y) ** 2)) ** 0.5
     x = (win_width // 2) - distance
 
@@ -222,7 +209,6 @@ def move_enemies(main_area, direction, enemy_speed):
         else:
             main_area.move(enemy_id, step * direction, 0)
 
-
         enemies_coords[enemy_id] = main_area.coords(enemy_id)
 
     root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
@@ -241,13 +227,33 @@ def bullet_overlapping(main_area, bullets):
             bullets.remove(bullet_overlap[1])
             main_area.delete(bullet_overlap[1])
 
-    # print(overlap)
     root.after(17, lambda: bullet_overlapping(main_area, bullets))
 
+
+enemy_bullets = []
+def enemy_bullet(main_area):
+    random_enemy = random.choice(list(enemies_coords.values()))
+
+    enemy_bullet = main_area.create_image(random_enemy[0],random_enemy[1] + 10, image=bullet_img, tag="enemy_bullet")
+    enemy_bullets.append(enemy_bullet)
+
+    root.after(3000, lambda: enemy_bullet(main_area))
+
+
+def enemy_bullet_move(main_area):
+    for bullet in enemy_bullets:
+        main_area.move(bullet, 0, 15)
+        eb_coords = main_area.bbox(bullet)
+
+        if eb_coords[3] > 1280:
+            main_area.delete(bullet)
+            enemy_bullets.remove(bullet)
+
+    root.after(17, lambda : enemy_bullet_move(main_area))
+    
 def main():
     direction = 1
     enemy_speed = 800
-
     bullets = []
 
     frm = config()
@@ -260,6 +266,9 @@ def main():
     bullet_overlapping(main_area, bullets)
     move_enemies(main_area, direction, enemy_speed)
     move_bullet(main_area, bullets)
+
+    enemy_bullet_move(main_area)
+    enemy_bullet(main_area)
 
     # root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
