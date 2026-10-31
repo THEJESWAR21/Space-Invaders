@@ -3,13 +3,12 @@ from tkinter import ttk
 from pprint import pprint
 
 # DONE: Create the Ship and Make it Move
-# TODO: Create Smooth Movement / Delta Time
+# DONE: Create Smooth Movement / Delta Time
 # DONE: Shooting Mechanics
 # DONE: RESIZE ASSETS TO FIT THE SCREEN
 # DONE: Enemies and its AI
 # TODO: Score / HighScore
 # TODO: ENEMY SHOOTING
-# TODO: SOUNDS
 # TODO: GAME LOOP
 # TODO: PLAYER LIFES
 # TODO: RED ALIEN SPACESHIP
@@ -31,15 +30,15 @@ ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\
 win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
 
-player_speed = 15 
 x = 0
 
-bullets = []
 
 debug_bg = ("Black", "Black", "Black")
 
 squids, crabs, octos = {}, {}, {}
 enemies_coords = {}
+
+pressed_keys = set()
 
 def config():
     root.title("Space-Invaders")
@@ -76,32 +75,44 @@ def player_draw(frm):
     return player_area, player
 
 
-def player_move(event, player_area, player, main_area, bullets):
-    key_track = []
+def on_key_press(event):
+    pressed_keys.add(event.keysym)
+
+def on_key_release(event):
+    pressed_keys.discard(event.keysym)
+
+def player_move(player_area, player, main_area, bullets):
+    dx, dy = 0 , 0
+    player_speed = 15 
 
     player_size = player_area.bbox(player)
     player_coords = player_area.coords(player)
     window_height = root.winfo_width()
 
-    key = event.keysym
+    # if (key == "a" or key == "Left")  and player_size[0] > 0: # 48 
+    #     player_area.move(player, -player_speed, 0)
+    # elif (key == "d" or key == "Right") and player_size[2] < window_height:
+    #     player_area.move(player, player_speed, 0)
+    # elif (key == 'space' or key == "up"):
+    #     player_shoot(main_area, bullets, player_size)
+    # else:
+    #     player_area.move(player, 0, 0)
 
-    moving_right = False
-    moving_left = False
-    shooting = False
-    
-    if (key == "a" or key == "Left") and player_size[0] > 0: # 48 
-        player_area.move(player, -player_speed, 0)
-    elif (key == "d" or key == "Right") and player_size[2] < window_height:
-        player_area.move(player, player_speed, 0)
-    elif (key == 'space' or key == "up"):
-        player_shoot(main_area, bullets, player_size)
-        # winsound.PlaySound(fire_sound, winsound.SND_FILENAME | winsound.SND_ASYNC)
-    else:
-        player_area.move(player, 0, 0)
+    if ('a' in pressed_keys) and (player_size[0] > 0):
+        dx = -player_speed
+    elif ('d' in pressed_keys) and (player_size[2] < window_height):
+        dx = player_speed
+
+    if dx != 0 or dy != 0:
+        player_area.move(player, dx, dy)
+
+
+    root.after(17, lambda: player_move(player_area, player, main_area, bullets))
 
 
 
-def player_shoot(main_area, bullets, player_size):
+def player_shoot(event, main_area, bullets, player, player_area):
+    player_size = player_area.bbox(player)
     bullet_size = 15
     half_size = bullet_size // 2
 
@@ -115,6 +126,7 @@ def player_shoot(main_area, bullets, player_size):
     # if len(bullets) < 1:
     bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img, tag="bullet")
     bullets.append(bullet)
+
 
 
 def move_bullet(main_area, bullets):
@@ -215,7 +227,7 @@ def move_enemies(main_area, direction, enemy_speed):
 
     root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
 
-def bullet_overlapping(main_area):
+def bullet_overlapping(main_area, bullets):
     for enemy_id in list(enemies_coords.keys()):
         enemy_bbox = main_area.bbox(enemy_id)
 
@@ -230,23 +242,29 @@ def bullet_overlapping(main_area):
             main_area.delete(bullet_overlap[1])
 
     # print(overlap)
-    root.after(17, lambda: bullet_overlapping(main_area))
+    root.after(17, lambda: bullet_overlapping(main_area, bullets))
 
 def main():
     direction = 1
     enemy_speed = 800
+
+    bullets = []
 
     frm = config()
     player_area, player = player_draw(frm)
     main_area = main_area_draw(frm)
 
     enemies_draw(main_area)
+    player_move(player_area, player, main_area, bullets)
 
-    bullet_overlapping(main_area)
+    bullet_overlapping(main_area, bullets)
     move_enemies(main_area, direction, enemy_speed)
     move_bullet(main_area, bullets)
 
-    root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
+    # root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
+    root.bind('<KeyPress>', lambda event: on_key_press(event))
+    root.bind('<KeyRelease>', lambda event: on_key_release(event))
+    root.bind('<space>', lambda event: player_shoot(event, main_area, bullets, player, player_area))
 
 
 if __name__ == "__main__":
