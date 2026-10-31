@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from pprint import pprint
-import winsound
-import time
 
 # DONE: Create the Ship and Make it Move
 # TODO: Create Smooth Movement / Delta Time
@@ -10,9 +8,12 @@ import time
 # DONE: RESIZE ASSETS TO FIT THE SCREEN
 # DONE: Enemies and its AI
 # TODO: Score / HighScore
-# TODO: Sounds
+# TODO: ENEMY SHOOTING
+# TODO: SOUNDS
 # TODO: GAME LOOP
 # TODO: PLAYER LIFES
+# TODO: RED ALIEN SPACESHIP
+# TODO: BARRIERS
 
 # RESEARCH: GARBAGE COLLECTION
 
@@ -39,7 +40,6 @@ debug_bg = ("Black", "Black", "Black")
 
 squids, crabs, octos = {}, {}, {}
 enemies_coords = {}
-
 
 def config():
     root.title("Space-Invaders")
@@ -68,7 +68,7 @@ def player_draw(frm):
     x0 = player_cvw // 2
     y0 = player_cvh // 2
     player_area = tk.Canvas(frm, bg=debug_bg[2], height=player_cvh, highlightthickness=0)
-    player = player_area.create_image(x0,y0, image=player_img)
+    player = player_area.create_image(x0,y0, image=player_img, tags="player")
     # player_area.move(player, 609.6, 0)
    
     player_area.pack(side="bottom", fill=tk.X)
@@ -76,13 +76,18 @@ def player_draw(frm):
     return player_area, player
 
 
-
 def player_move(event, player_area, player, main_area, bullets):
+    key_track = []
+
     player_size = player_area.bbox(player)
     player_coords = player_area.coords(player)
     window_height = root.winfo_width()
 
     key = event.keysym
+
+    moving_right = False
+    moving_left = False
+    shooting = False
     
     if (key == "a" or key == "Left") and player_size[0] > 0: # 48 
         player_area.move(player, -player_speed, 0)
@@ -93,6 +98,7 @@ def player_move(event, player_area, player, main_area, bullets):
         # winsound.PlaySound(fire_sound, winsound.SND_FILENAME | winsound.SND_ASYNC)
     else:
         player_area.move(player, 0, 0)
+
 
 
 def player_shoot(main_area, bullets, player_size):
@@ -106,9 +112,9 @@ def player_shoot(main_area, bullets, player_size):
     y1 = top_edge + 20 
     offset = 605
 
-    if len(bullets) < 1:
-        bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img)
-        bullets.append(bullet)
+    # if len(bullets) < 1:
+    bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img, tag="bullet")
+    bullets.append(bullet)
 
 
 def move_bullet(main_area, bullets):
@@ -120,7 +126,7 @@ def move_bullet(main_area, bullets):
             main_area.delete(bullet)
             bullets.remove(bullet)
 
-    root.after(20, lambda : move_bullet(main_area, bullets))
+    root.after(17, lambda : move_bullet(main_area, bullets))
 
 
 def find_mid_x(y, space_between, enemy_count, x0, x1):
@@ -133,7 +139,7 @@ def find_mid_x(y, space_between, enemy_count, x0, x1):
 
 def draw_rows(main_area, x, y, space_between, image_ref, enemy_count, enemy_type):
     for _ in range(enemy_count):
-        enemy = main_area.create_image(x, y, image=image_ref)
+        enemy = main_area.create_image(x, y, image=image_ref, tag="enemy")
         coords = main_area.coords(enemy)
 
         enemies_coords[enemy] = coords
@@ -150,7 +156,7 @@ def enemies_draw(main_area):
 
     x0 = win_width // 2
     x1 = x0 + (space_between * (enemy_count-1))
-    y = 0
+    y = 30
 
     # ROW 1
     y = y + space_between_rows
@@ -210,13 +216,10 @@ def move_enemies(main_area, direction, enemy_speed):
     root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
 
 def bullet_overlapping(main_area):
-    overlap = []
-
     for enemy_id in list(enemies_coords.keys()):
         enemy_bbox = main_area.bbox(enemy_id)
 
         bullet_overlap = main_area.find_overlapping(*enemy_bbox)  # (51, 0)
-        # print(len(bullet_overlap))
 
         if len(bullet_overlap) > 1:
             print(bullet_overlap)
@@ -227,8 +230,7 @@ def bullet_overlapping(main_area):
             main_area.delete(bullet_overlap[1])
 
     # print(overlap)
-
-    root.after(10, lambda: bullet_overlapping(main_area))
+    root.after(17, lambda: bullet_overlapping(main_area))
 
 def main():
     direction = 1
@@ -239,6 +241,7 @@ def main():
     main_area = main_area_draw(frm)
 
     enemies_draw(main_area)
+
     bullet_overlapping(main_area)
     move_enemies(main_area, direction, enemy_speed)
     move_bullet(main_area, bullets)
