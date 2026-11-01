@@ -214,18 +214,22 @@ def move_enemies(main_area, direction, enemy_speed):
     root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
 
 def bullet_overlapping(main_area, bullets):
-    for enemy_id in list(enemies_coords.keys()):
-        enemy_bbox = main_area.bbox(enemy_id)
-
-        bullet_overlap = main_area.find_overlapping(*enemy_bbox)  # (51, 0)
-
+    for bullet in bullets:
+        bullet_bbox = main_area.bbox(bullet)
+        bullet_overlap = main_area.find_overlapping(*bullet_bbox)
+      
         if len(bullet_overlap) > 1:
-            print(bullet_overlap)
-            enemies_coords.pop(bullet_overlap[0])
-            main_area.delete(bullet_overlap[0])
+            for overlap_id in bullet_overlap:
+                enemy_tag = main_area.gettags(overlap_id)
 
-            bullets.remove(bullet_overlap[1])
-            main_area.delete(bullet_overlap[1])
+                if enemy_tag[0] == "enemy":
+                    enemies_coords.pop(overlap_id)
+                    main_area.delete(overlap_id)
+
+                    bullets.remove(bullet_overlap[-1])
+                    main_area.delete(bullet_overlap[-1])
+                    print('Enemy', overlap_id, 'DIED')
+                    break
 
     root.after(17, lambda: bullet_overlapping(main_area, bullets))
 
@@ -234,7 +238,7 @@ enemy_bullets = []
 def enemy_bullet(main_area):
     random_enemy = random.choice(list(enemies_coords.values()))
 
-    enemy_bullet = main_area.create_image(random_enemy[0],random_enemy[1] + 10, image=bullet_img, tag="enemy_bullet")
+    enemy_bullet = main_area.create_image(random_enemy[0], random_enemy[1] + 30, image=bullet_img, tag="enemy_bullet")
     enemy_bullets.append(enemy_bullet)
 
     root.after(3000, lambda: enemy_bullet(main_area))
@@ -267,8 +271,8 @@ def main():
     move_enemies(main_area, direction, enemy_speed)
     move_bullet(main_area, bullets)
 
-    enemy_bullet_move(main_area)
-    enemy_bullet(main_area)
+    # enemy_bullet(main_area)
+    # enemy_bullet_move(main_area)
 
     # root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
