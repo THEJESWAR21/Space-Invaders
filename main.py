@@ -59,19 +59,19 @@ def main_area_draw(frm):
 
     return main_area
 
-def player_draw(frm):
+def player_draw(main_area):
     player_cvw, player_cvh = win_width, 80 # (1280,80) Player Canvas Size
     # MidPoint of Canvas: 1280 // 2 x 80 // 2 = 640 x 40
 
     x0 = player_cvw // 2
-    y0 = player_cvh // 2
-    player_area = tk.Canvas(frm, bg=debug_bg[2], height=player_cvh, highlightthickness=0)
-    player = player_area.create_image(x0,y0, image=player_img, tags="player")
-    # player_area.move(player, 609.6, 0)
+    y0 = win_height - 50
+    # main_area = tk.Canvas(frm, bg=debug_bg[2], height=player_cvh, highlightthickness=0)
+    player = main_area.create_image(x0,y0, image=player_img, tags="player")
+    # main_area.move(player, 609.6, 0)
    
-    player_area.pack(side="bottom", fill=tk.X)
+    # main_area.pack(side="bottom", fill=tk.X)
 
-    return player_area, player
+    return player
 
 
 def on_key_press(event):
@@ -80,12 +80,12 @@ def on_key_press(event):
 def on_key_release(event):
     pressed_keys.discard(event.keysym)
 
-def player_move(player_area, player, main_area, bullets):
+def player_move(player, main_area, bullets):
     dx, dy = 0 , 0
     player_speed = 15 
 
-    player_size = player_area.bbox(player)
-    player_coords = player_area.coords(player)
+    player_size = main_area.bbox(player)
+    player_coords = main_area.coords(player)
     window_height = root.winfo_width()
 
     if ('a' in pressed_keys) and (player_size[0] > 0):
@@ -94,14 +94,15 @@ def player_move(player_area, player, main_area, bullets):
         dx = player_speed
 
     if dx != 0 or dy != 0:
-        player_area.move(player, dx, dy)
+        main_area.move(player, dx, dy)
 
-    root.after(30, lambda: player_move(player_area, player, main_area, bullets))
+    root.after(30, lambda: player_move(player, main_area, bullets))
 
 
 
-def player_shoot(event, main_area, bullets, player, player_area):
-    player_size = player_area.bbox(player)
+def player_shoot(event, bullets, player, main_area):
+    player_size = main_area.bbox(player)
+
     bullet_size = 15
     half_size = bullet_size // 2
 
@@ -109,11 +110,11 @@ def player_shoot(event, main_area, bullets, player, player_area):
     # x_midpoint , top_edge
     top_edge = player_size[1] 
 
-    y1 = top_edge + 20 
-    offset = 605
+    y1 = top_edge
+    offset = 20
 
     if len(bullets) < 1:
-        bullet = main_area.create_image(x_midpoint, y1 + 590, image=bullet_img, tag="bullet")
+        bullet = main_area.create_image(x_midpoint, y1 - offset, image=bullet_img, tag="bullet")
         bullets.append(bullet)
 
 
@@ -255,7 +256,7 @@ def enemy_bullet_move(main_area):
 
     root.after(30, lambda: enemy_bullet_move(main_area))
 
-def player_death(main_area, player_area):
+def player_death(main_area):
     ...
     
 def main():
@@ -264,11 +265,11 @@ def main():
     bullets = []
 
     frm = config()
-    player_area, player = player_draw(frm)
     main_area = main_area_draw(frm)
+    player = player_draw(main_area)
 
     enemies_draw(main_area)
-    player_move(player_area, player, main_area, bullets)
+    player_move(player, main_area, bullets)
 
     bullet_overlapping(main_area, bullets)
     move_enemies(main_area, direction, enemy_speed)
@@ -277,10 +278,10 @@ def main():
     enemy_bullet_draw(main_area)
     enemy_bullet_move(main_area)
 
-    # root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
+    # root.bind('<KeyPress>', lambda event: player_move(event, main_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
     root.bind('<KeyRelease>', lambda event: on_key_release(event))
-    root.bind('<space>', lambda event: player_shoot(event, main_area, bullets, player, player_area))
+    root.bind('<space>', lambda event: player_shoot(event, bullets, player, main_area))
 
 
 if __name__ == "__main__":
