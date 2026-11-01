@@ -9,9 +9,8 @@ import random
 # DONE: RESIZE ASSETS TO FIT THE SCREEN
 # DONE: Enemies and its AI
 # DONE: ENEMY SHOOTING
-# TODO: PLAYER LIFES
-# TODO: GAME LOOP
-# TODO: Score
+# DONE: PLAYER LIFES
+# DONE: Score
 
 # RESEARCH: GARBAGE COLLECTION
 
@@ -31,12 +30,16 @@ win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
 
 debug_bg = ("Black", "Black", "Black")
-
-squids, crabs, octos = {}, {}, {}
 enemies_coords = {}
 
 pressed_keys = set()
 
+score = 0
+player_lifes = 3
+enemy_speed = 800
+
+direction = 1
+bullets = []
 def config():
     root.title("Space-Invaders")
 
@@ -45,6 +48,7 @@ def config():
 
     root.geometry(f"{win_width}x{win_height}+{x}+{y}")
     root.resizable(False, False) # Width, Height
+    root.configure(bg="black")
 
     frm = tk.Frame(root, bg=debug_bg[0]) # ROOT FRAME
     frm.pack(fill="both", expand=True)
@@ -96,8 +100,6 @@ def player_move(player, main_area, bullets):
 
     root.after(30, lambda: player_move(player, main_area, bullets))
 
-
-
 def player_shoot(event, bullets, player, main_area):
     player_size = main_area.bbox(player)
 
@@ -111,9 +113,9 @@ def player_shoot(event, bullets, player, main_area):
     y1 = top_edge
     offset = 20
 
-    if len(bullets) < 1:
-        bullet = main_area.create_image(x_midpoint, y1 - offset, image=bullet_img, tag="bullet")
-        bullets.append(bullet)
+    # if len(bullets) < 3:
+    bullet = main_area.create_image(x_midpoint, y1 - offset, image=bullet_img, tag="bullet")
+    bullets.append(bullet)
 
 
 def move_bullet(main_area, bullets):
@@ -245,7 +247,7 @@ def enemy_bullet_draw(main_area):
     enemy_bullet = main_area.create_image(random_enemy[0], random_enemy[1] + 30, image=bullet_img, tag="enemy_bullet")
     enemy_bullets.append(enemy_bullet)
 
-    root.after(3000, lambda: enemy_bullet_draw(main_area))
+    root.after(500, lambda: enemy_bullet_draw(main_area))
 
 
 def enemy_bullet_move(main_area):
@@ -259,7 +261,7 @@ def enemy_bullet_move(main_area):
 
     root.after(30, lambda: enemy_bullet_move(main_area))
 
-def player_death(main_area, player, player_lifes, bullets, lifes_ui):
+def player_death(main_area, player, player_lifes, bullets, lifes_ui, score):
     player_coords = main_area.bbox(player)
     player_overlap = main_area.find_overlapping(*player_coords)
 
@@ -275,31 +277,39 @@ def player_death(main_area, player, player_lifes, bullets, lifes_ui):
                 main_area.delete(item)
 
             elif item_tag[0] == "enemy":
-                main_area.delete(player)
+                show_end_screen()
 
     if player_lifes == 0:
-        main_area.delete(player)
+        show_end_screen()
 
-    root.after(100, lambda: player_death(main_area, player, player_lifes, bullets, lifes_ui))
+    root.after(100, lambda: player_death(main_area, player, player_lifes, bullets, lifes_ui, score))
 
 def ui_elements(main_area, player_lifes, score):
-    # lifes_ui = tk.Label(frm, text=f"Lifes: {player_lifes}", fg="white", bg="white", font=("Arial", 5, "bold"))
-    # lifes_ui.pack(side="top", anchor="ne")
-
     lifes_ui = main_area.create_text(1200, 30, text=f"LIFES: 0{player_lifes}", fill="white", font=("Arial", 15, "bold"))
     score_ui = main_area.create_text(80, 30, text=f"SCORE: {score}", fill="white", font=("Arial", 15, "bold"))
 
     return lifes_ui, score_ui
 
-    
+def show_end_screen():
+    Score_var = tk.IntVar(value=score)
+
+    for widget in root.winfo_children():
+        try:
+            widget.pack_forget()
+        except tk.TclError:
+            pass
+
+    end_label = tk.Label(root, text="Game Over / The End", font={"Arial", 50}, bg="black", fg="White")
+    end_label.pack(pady=50)
+
+    score_label_1 = tk.Label(root, text="FINAL SCORE:", font={"Arial", 20}, bg="Black", fg="White")
+    score_label_1.pack(pady=70)
+
+    restart_btn = tk.Button(root, text='QUIT', command=root.destroy, bg="Black", fg="White")
+    restart_btn.pack(pady=10)
+
 
 def main():
-    player_lifes = 3
-    score = 0
-    direction = 1
-    enemy_speed = 800
-    bullets = []
-
     frm = config()
     main_area = main_area_draw(frm)
     lifes_ui, score_ui = ui_elements(main_area, player_lifes, score)
@@ -315,12 +325,29 @@ def main():
     enemy_bullet_draw(main_area)
     enemy_bullet_move(main_area)
 
-    player_death(main_area, player, player_lifes, bullets, lifes_ui)
+    player_death(main_area, player, player_lifes, bullets, lifes_ui, score)
 
     # root.bind('<KeyPress>', lambda event: player_move(event, main_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
     root.bind('<KeyRelease>', lambda event: on_key_release(event))
     root.bind('<space>', lambda event: player_shoot(event, bullets, player, main_area))
+
+    check_next_level(main_area)
+
+def check_next_level(main_area):
+    if len(enemies_coords) <= 0:
+        player_lifes = 3
+        enemy_speed += 200
+
+        for widget in root.winfo_children():
+            widget.pack_forget()
+
+        main()
+
+    else:
+        root.after(100, lambda: check_next_level(main_area))
+
+
 
 
 if __name__ == "__main__":
