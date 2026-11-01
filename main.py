@@ -20,6 +20,7 @@ root = tk.Tk()
 player_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Ship.png") # 16x16 (RESIZED: 6.0x (96x96))
 bullet_img = tk.PhotoImage(file=r'C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Player\Bullet.png')
 
+
 # Enemies
 crab_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Crab-1.png") # 4.0x
 squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Squid-1.png")
@@ -28,7 +29,6 @@ ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\
 
 win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
-
 
 debug_bg = ("Black", "Black", "Black")
 
@@ -212,7 +212,7 @@ def move_enemies(main_area, direction, enemy_speed):
 
     root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
 
-def bullet_overlapping(main_area, bullets):
+def bullet_overlapping(main_area, bullets, score_ui, score):
     for bullet in bullets:
         bullet_bbox = main_area.bbox(bullet)
         bullet_overlap = main_area.find_overlapping(*bullet_bbox)
@@ -227,13 +227,15 @@ def bullet_overlapping(main_area, bullets):
 
                         bullets.remove(bullet_overlap[-1])
                         main_area.delete(bullet_overlap[-1])
+                        score += 50
+                        main_area.itemconfig(score_ui, text=f"SCORE: {score}")
                         print('Enemy', overlap_id, 'DIED')
                         break
                 except IndexError:
                     break
 
 
-    root.after(17, lambda: bullet_overlapping(main_area, bullets))
+    root.after(17, lambda: bullet_overlapping(main_area, bullets, score_ui, score))
 
 
 enemy_bullets = []
@@ -257,7 +259,7 @@ def enemy_bullet_move(main_area):
 
     root.after(30, lambda: enemy_bullet_move(main_area))
 
-def player_death(main_area, player, player_lifes, bullets):
+def player_death(main_area, player, player_lifes, bullets, lifes_ui):
     player_coords = main_area.bbox(player)
     player_overlap = main_area.find_overlapping(*player_coords)
 
@@ -265,14 +267,20 @@ def player_death(main_area, player, player_lifes, bullets):
         for item in player_overlap:
             item_tag = main_area.gettags(item)
 
-            if item_tag[0] == 'enemy_bullet' or item_tag[0] == "enemy":
+            if item_tag[0] == 'enemy_bullet':
                 print("Player Life -1")
                 player_lifes -= 1
+                main_area.itemconfig(lifes_ui, text=f"LIFES: 0{player_lifes}")
+                enemy_bullets.remove(item)
+                main_area.delete(item)
+
+            elif item_tag[0] == "enemy":
+                main_area.delete(player)
 
     if player_lifes == 0:
         main_area.delete(player)
 
-    root.after(100, lambda: player_death(main_area, player, player_lifes, bullets))
+    root.after(100, lambda: player_death(main_area, player, player_lifes, bullets, lifes_ui))
 
 def ui_elements(main_area, player_lifes, score):
     # lifes_ui = tk.Label(frm, text=f"Lifes: {player_lifes}", fg="white", bg="white", font=("Arial", 5, "bold"))
@@ -281,7 +289,7 @@ def ui_elements(main_area, player_lifes, score):
     lifes_ui = main_area.create_text(1200, 30, text=f"LIFES: 0{player_lifes}", fill="white", font=("Arial", 15, "bold"))
     score_ui = main_area.create_text(80, 30, text=f"SCORE: {score}", fill="white", font=("Arial", 15, "bold"))
 
-    root.after(300, lambda: ui_elements(main_area, player_lifes, score))
+    return lifes_ui, score_ui
 
     
 
@@ -294,20 +302,20 @@ def main():
 
     frm = config()
     main_area = main_area_draw(frm)
+    lifes_ui, score_ui = ui_elements(main_area, player_lifes, score)
     player = player_draw(main_area)
 
     enemies_draw(main_area)
     player_move(player, main_area, bullets)
 
-    bullet_overlapping(main_area, bullets)
+    bullet_overlapping(main_area, bullets, score_ui, score)
     move_enemies(main_area, direction, enemy_speed)
     move_bullet(main_area, bullets)
 
     enemy_bullet_draw(main_area)
     enemy_bullet_move(main_area)
 
-    player_death(main_area, player, player_lifes, bullets)
-    ui_elements(main_area, player_lifes, score)
+    player_death(main_area, player, player_lifes, bullets, lifes_ui)
 
     # root.bind('<KeyPress>', lambda event: player_move(event, main_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
