@@ -8,8 +8,8 @@ import random
 # DONE: Shooting Mechanics
 # DONE: RESIZE ASSETS TO FIT THE SCREEN
 # DONE: Enemies and its AI
-# TODO: Score
 # TODO: ENEMY SHOOTING
+# TODO: Score
 # TODO: GAME LOOP
 # TODO: PLAYER LIFES
 # TODO: RED ALIEN SPACESHIP
@@ -235,13 +235,13 @@ def bullet_overlapping(main_area, bullets):
 
 
 enemy_bullets = []
-def enemy_bullet(main_area):
+def enemy_bullet_draw(main_area):
     random_enemy = random.choice(list(enemies_coords.values()))
 
     enemy_bullet = main_area.create_image(random_enemy[0], random_enemy[1] + 30, image=bullet_img, tag="enemy_bullet")
     enemy_bullets.append(enemy_bullet)
 
-    root.after(3000, lambda: enemy_bullet(main_area))
+    root.after(3000, lambda: enemy_bullet_draw(main_area))
 
 
 def enemy_bullet_move(main_area):
@@ -253,7 +253,10 @@ def enemy_bullet_move(main_area):
             main_area.delete(bullet)
             enemy_bullets.remove(bullet)
 
-    root.after(17, lambda : enemy_bullet_move(main_area))
+    root.after(30, lambda: enemy_bullet_move(main_area))
+
+def player_death(main_area, player_area):
+    ...
     
 def main():
     direction = 1
@@ -271,8 +274,8 @@ def main():
     move_enemies(main_area, direction, enemy_speed)
     move_bullet(main_area, bullets)
 
-    # enemy_bullet(main_area)
-    # enemy_bullet_move(main_area)
+    enemy_bullet_draw(main_area)
+    enemy_bullet_move(main_area)
 
     # root.bind('<KeyPress>', lambda event: player_move(event, player_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
