@@ -8,10 +8,10 @@ import random
 # DONE: Shooting Mechanics
 # DONE: RESIZE ASSETS TO FIT THE SCREEN
 # DONE: Enemies and its AI
-# TODO: ENEMY SHOOTING
-# TODO: Score
-# TODO: GAME LOOP
+# DONE: ENEMY SHOOTING
 # TODO: PLAYER LIFES
+# TODO: GAME LOOP
+# TODO: Score
 # TODO: RED ALIEN SPACESHIP
 # TODO: BARRIERS
 
@@ -256,8 +256,20 @@ def enemy_bullet_move(main_area):
 
     root.after(30, lambda: enemy_bullet_move(main_area))
 
-def player_death(main_area):
-    ...
+def player_death(main_area, player):
+    player_coords = main_area.bbox(player)
+    player_overlap = main_area.find_overlapping(*player_coords)
+
+    if len(player_overlap) > 1:
+        for item in player_overlap:
+            item_tag = main_area.gettags(item)
+
+            if item_tag[0] == 'enemy_bullet':
+                print("Player Life -1")
+                main_area.delete(player)
+
+    root.after(100, lambda: player_death(main_area, player))
+        
     
 def main():
     direction = 1
@@ -277,6 +289,8 @@ def main():
 
     enemy_bullet_draw(main_area)
     enemy_bullet_move(main_area)
+
+    player_death(main_area, player)
 
     # root.bind('<KeyPress>', lambda event: player_move(event, main_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
