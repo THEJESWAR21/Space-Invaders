@@ -89,9 +89,12 @@ def player_move(player, main_area, bullets):
     dx, dy = 0 , 0
     player_speed = 15 
 
-    player_size = main_area.bbox(player)
-    player_coords = main_area.coords(player)
-    window_height = root.winfo_width()
+    try:
+        player_size = main_area.bbox(player)
+        player_coords = main_area.coords(player)
+        window_height = root.winfo_width()
+    except:
+        return
 
     if ('a' in pressed_keys) and (player_size[0] > 0):
         dx = -player_speed
@@ -275,6 +278,8 @@ def enemy_bullet_draw(main_area):
         root.after(500, lambda: enemy_bullet_draw(main_area))
     except IndexError:
         return
+    except tk.TclError:
+        return
         
 
 def enemy_bullet_move(main_area):
@@ -294,8 +299,11 @@ def enemy_bullet_move(main_area):
     root.after(30, lambda: enemy_bullet_move(main_area))
 
 def player_death(main_area, player, player_lifes, bullets, lifes_ui, score):
-    player_coords = main_area.bbox(player)
-    player_overlap = main_area.find_overlapping(*player_coords)
+    try:
+        player_coords = main_area.bbox(player)
+        player_overlap = main_area.find_overlapping(*player_coords)
+    except tk.TclError:
+        return
 
     if len(player_overlap) > 1:
         for item in player_overlap:
