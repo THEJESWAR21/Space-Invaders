@@ -40,6 +40,9 @@ enemy_speed = 800
 
 direction = 1
 bullets = []
+
+death = False
+
 def config():
     root.title("Space-Invaders")
 
@@ -120,12 +123,17 @@ def player_shoot(event, bullets, player, main_area):
 
 def move_bullet(main_area, bullets):
     for bullet in bullets:
-        main_area.move(bullet, 0, -15)
-        b_coords = main_area.bbox(bullet) 
+        try:
+            main_area.move(bullet, 0, -15)
+            b_coords = main_area.bbox(bullet) 
 
-        if b_coords[3] < 0:
-            main_area.delete(bullet)
-            bullets.remove(bullet)
+            if b_coords[3] < 0:
+                main_area.delete(bullet)
+                bullets.remove(bullet)
+        except TypeError:
+            break
+        except tk.TclError:
+            break
 
     root.after(17, lambda : move_bullet(main_area, bullets))
 
@@ -163,26 +171,26 @@ def enemies_draw(main_area):
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
     draw_rows(main_area, x, y, space_between, squid_img, enemy_count, 'squid')
 
-    # ROW 2
-    y = y + space_between_rows
-    x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
-
-    # ROW 3
-    y = y + space_between_rows
-    x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
-
-    # ROW 4
-    y = y + space_between_rows
-    x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
-
-    # ROW 5
-    y = y + space_between_rows
-    x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
-
+    # # ROW 2
+    # y = y + space_between_rows
+    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    # draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
+    #
+    # # ROW 3
+    # y = y + space_between_rows
+    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    # draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
+    #
+    # # ROW 4
+    # y = y + space_between_rows
+    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    # draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
+    #
+    # # ROW 5
+    # y = y + space_between_rows
+    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    # draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
+    #
     # main_area.delete(squid[6])
 
 def move_enemies(main_area, direction, enemy_speed):
@@ -193,8 +201,12 @@ def move_enemies(main_area, direction, enemy_speed):
     enemies_coords_values = list(enemies_coords.values())
     enemies_coords_values.sort()
 
-    closest_to_right = enemies_coords_values[-1][0]
-    closest_to_left = enemies_coords_values[0][0] 
+    try:
+        closest_to_right = enemies_coords_values[-1][0]
+        closest_to_left = enemies_coords_values[0][0] 
+    except IndexError:
+        closest_to_right = 0
+        closest_to_left = 0
 
     if direction == 1 and closest_to_right + step >= 1280:
         direction = -1
@@ -205,20 +217,30 @@ def move_enemies(main_area, direction, enemy_speed):
         shift = True
 
     for enemy_id, enemy_coords in enemies_coords.items():
-        if shift == True:
-            main_area.move(enemy_id, 0, 50)
-        else:
-            main_area.move(enemy_id, step * direction, 0)
+        try:
+            if shift == True:
+                main_area.move(enemy_id, 0, 50)
+            else:
+                main_area.move(enemy_id, step * direction, 0)
 
-        enemies_coords[enemy_id] = main_area.coords(enemy_id)
+            enemies_coords[enemy_id] = main_area.coords(enemy_id)
+        except tk.TclError:
+            break
 
     root.after(enemy_speed, lambda: move_enemies(main_area, direction, enemy_speed))
 
 def bullet_overlapping(main_area, bullets, score_ui, score):
     for bullet in bullets:
-        bullet_bbox = main_area.bbox(bullet)
-        bullet_overlap = main_area.find_overlapping(*bullet_bbox)
-      
+        try:
+            bullet_bbox = main_area.bbox(bullet)
+            bullet_overlap = main_area.find_overlapping(*bullet_bbox)
+        except TypeError:
+            # bullet_bbox = (0,0,0,0)
+            # bullet_overlap = main_area.find_overlapping(*bullet_bbox)
+            break
+        except tk.TclError:
+            break
+          
         if len(bullet_overlap) > 1:
             for overlap_id in bullet_overlap:
                 enemy_tag = main_area.gettags(overlap_id)
@@ -235,6 +257,8 @@ def bullet_overlapping(main_area, bullets, score_ui, score):
                         break
                 except IndexError:
                     break
+                except tk.TclError:
+                    break
 
 
     root.after(17, lambda: bullet_overlapping(main_area, bullets, score_ui, score))
@@ -242,22 +266,30 @@ def bullet_overlapping(main_area, bullets, score_ui, score):
 
 enemy_bullets = []
 def enemy_bullet_draw(main_area):
-    random_enemy = random.choice(list(enemies_coords.values()))
+    try:
+        random_enemy = random.choice(list(enemies_coords.values()))
 
-    enemy_bullet = main_area.create_image(random_enemy[0], random_enemy[1] + 30, image=bullet_img, tag="enemy_bullet")
-    enemy_bullets.append(enemy_bullet)
+        enemy_bullet = main_area.create_image(random_enemy[0], random_enemy[1] + 30, image=bullet_img, tag="enemy_bullet")
+        enemy_bullets.append(enemy_bullet)
 
-    root.after(500, lambda: enemy_bullet_draw(main_area))
-
+        root.after(500, lambda: enemy_bullet_draw(main_area))
+    except IndexError:
+        return
+        
 
 def enemy_bullet_move(main_area):
     for bullet in enemy_bullets:
-        main_area.move(bullet, 0, 15)
-        eb_coords = main_area.bbox(bullet)
+        try:
+            main_area.move(bullet, 0, 15)
+            eb_coords = main_area.bbox(bullet)
 
-        if eb_coords[3] > 1280:
-            main_area.delete(bullet)
-            enemy_bullets.remove(bullet)
+            if eb_coords[3] > 1280:
+                main_area.delete(bullet)
+                enemy_bullets.remove(bullet)
+        except TypeError:
+            break
+        except tk.TclError:
+            break
 
     root.after(30, lambda: enemy_bullet_move(main_area))
 
@@ -269,18 +301,23 @@ def player_death(main_area, player, player_lifes, bullets, lifes_ui, score):
         for item in player_overlap:
             item_tag = main_area.gettags(item)
 
-            if item_tag[0] == 'enemy_bullet':
-                print("Player Life -1")
-                player_lifes -= 1
-                main_area.itemconfig(lifes_ui, text=f"LIFES: 0{player_lifes}")
-                enemy_bullets.remove(item)
-                main_area.delete(item)
+            try:
+                if item_tag[0] == 'enemy_bullet':
+                    print("Player Life -1")
+                    player_lifes -= 1
+                    main_area.itemconfig(lifes_ui, text=f"LIFES: 0{player_lifes}")
+                    enemy_bullets.remove(item)
+                    main_area.delete(item)
 
-            elif item_tag[0] == "enemy":
-                show_end_screen()
+                elif item_tag[0] == "enemy":
+                    show_end_screen()
+                    death = True
+            except ValueError:
+                break
 
     if player_lifes == 0:
         show_end_screen()
+        death = True
 
     root.after(100, lambda: player_death(main_area, player, player_lifes, bullets, lifes_ui, score))
 
@@ -308,6 +345,15 @@ def show_end_screen():
     restart_btn = tk.Button(root, text='QUIT', command=root.destroy, bg="Black", fg="White")
     restart_btn.pack(pady=10)
 
+def level_up(player_lifes, enemy_speed):
+    player_lifes = 3
+    enemy_speed += 200
+
+    for widget in root.winfo_children():
+        widget.pack_forget()
+
+    main()
+
 
 def main():
     frm = config()
@@ -315,9 +361,9 @@ def main():
     lifes_ui, score_ui = ui_elements(main_area, player_lifes, score)
     player = player_draw(main_area)
 
-    enemies_draw(main_area)
     player_move(player, main_area, bullets)
 
+    enemies_draw(main_area)
     bullet_overlapping(main_area, bullets, score_ui, score)
     move_enemies(main_area, direction, enemy_speed)
     move_bullet(main_area, bullets)
@@ -326,30 +372,36 @@ def main():
     enemy_bullet_move(main_area)
 
     player_death(main_area, player, player_lifes, bullets, lifes_ui, score)
+    # level_up(player_lifes, enemy_speed)
+
 
     # root.bind('<KeyPress>', lambda event: player_move(event, main_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
     root.bind('<KeyRelease>', lambda event: on_key_release(event))
     root.bind('<space>', lambda event: player_shoot(event, bullets, player, main_area))
 
-    check_next_level(main_area)
-
-def check_next_level(main_area):
-    if len(enemies_coords) <= 0:
+level = 0
+def levels(level, player_lifes, enemy_speed):
+    if level == 0 and len(enemies_coords) == 0:
+        main()
+        level += 1
+    elif level > 0 and len(enemies_coords) == 0:
         player_lifes = 3
-        enemy_speed += 200
+        enemy_speed += 1000
+
+        bullets.clear()
+        enemy_bullets.clear()
+        pressed_keys.clear()
 
         for widget in root.winfo_children():
-            widget.pack_forget()
+            widget.destroy()
 
+        level += 1
         main()
 
-    else:
-        root.after(100, lambda: check_next_level(main_area))
 
-
-
+    root.after(17, lambda: levels(level, player_lifes, enemy_speed))
 
 if __name__ == "__main__":
-    main()
+    levels(level, player_lifes, enemy_speed)
     root.mainloop()

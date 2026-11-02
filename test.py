@@ -4,8 +4,9 @@
 
 test = {}
 
-test["Fruits"] = {
-    "Apples",
-    "Banana",
-}
+# test["Fruits"] = {
+#     "Apples",
+#     "Banana",
+# }
 print(test)
+print(len(test))
