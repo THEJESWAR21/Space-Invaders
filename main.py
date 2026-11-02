@@ -22,7 +22,7 @@ bullet_img = tk.PhotoImage(file=r'C:\Users\Thej\Projects\Space-Invaders-Py\Asset
 # Enemies
 crab_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Crab-1.png") # 4.0x
 squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Squid-1.png")
-# octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
+octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
 # ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Alienship.png")
 
 win_width, win_height = 1280, 720 # 960, 540
@@ -40,7 +40,6 @@ enemy_speed = tk.IntVar(value=800)
 direction = 1
 bullets = []
 
-death = False
 
 def config():
     root.title("Space-Invaders")
@@ -69,11 +68,9 @@ def player_draw(main_area):
 
     x0 = player_cvw // 2
     y0 = win_height - 50
+
     # main_area = tk.Canvas(frm, bg=debug_bg[2], height=player_cvh, highlightthickness=0)
     player = main_area.create_image(x0,y0, image=player_img, tags="player")
-    # main_area.move(player, 609.6, 0)
-   
-    # main_area.pack(side="bottom", fill=tk.X)
 
     return player
 
@@ -84,7 +81,7 @@ def on_key_press(event):
 def on_key_release(event):
     pressed_keys.discard(event.keysym)
 
-def player_move(player, main_area, bullets):
+def player_move(player, main_area):
     dx, dy = 0 , 0
     player_speed = 15 
 
@@ -103,7 +100,7 @@ def player_move(player, main_area, bullets):
     if dx != 0 or dy != 0:
         main_area.move(player, dx, dy)
 
-    root.after(30, lambda: player_move(player, main_area, bullets))
+    root.after(30, lambda: player_move(player, main_area))
 
 def player_shoot(event, bullets, player, main_area):
     player_size = main_area.bbox(player)
@@ -118,9 +115,9 @@ def player_shoot(event, bullets, player, main_area):
     y1 = top_edge
     offset = 20
 
-    # if len(bullets) < 3:
-    bullet = main_area.create_image(x_midpoint, y1 - offset, image=bullet_img, tag="bullet")
-    bullets.append(bullet)
+    if len(bullets) < 1:
+        bullet = main_area.create_image(x_midpoint, y1 - offset, image=bullet_img, tag="bullet")
+        bullets.append(bullet)
 
 
 def move_bullet(main_area, bullets):
@@ -173,25 +170,25 @@ def enemies_draw(main_area):
     x = find_mid_x(y, space_between, enemy_count, x0, x1)
     draw_rows(main_area, x, y, space_between, squid_img, enemy_count, 'squid')
     #
-    # # ROW 2
-    # y = y + space_between_rows
-    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    # draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
-    #
-    # # ROW 3
-    # y = y + space_between_rows
-    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    # draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
-    #
-    # # ROW 4
-    # y = y + space_between_rows
-    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    # draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
-    #
-    # # ROW 5
-    # y = y + space_between_rows
-    # x = find_mid_x(y, space_between, enemy_count, x0, x1)
-    # draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
+    # ROW 2
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
+
+    # ROW 3
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    draw_rows(main_area, x, y, space_between, crab_img, enemy_count, 'crab')
+
+    # ROW 4
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
+
+    # ROW 5
+    y = y + space_between_rows
+    x = find_mid_x(y, space_between, enemy_count, x0, x1)
+    draw_rows(main_area, x, y, space_between, octo_img, enemy_count, 'octo')
 
 def move_enemies(main_area, direction, enemy_speed):
     shift = False
@@ -235,8 +232,6 @@ def bullet_overlapping(main_area, bullets, score_ui, score):
             bullet_bbox = main_area.bbox(bullet)
             bullet_overlap = main_area.find_overlapping(*bullet_bbox)
         except TypeError:
-            # bullet_bbox = (0,0,0,0)
-            # bullet_overlap = main_area.find_overlapping(*bullet_bbox)
             break
         except tk.TclError:
             break
@@ -272,7 +267,7 @@ def enemy_bullet_draw(main_area):
         enemy_bullet = main_area.create_image(random_enemy[0], random_enemy[1] + 30, image=bullet_img, tag="enemy_bullet")
         enemy_bullets.append(enemy_bullet)
 
-        root.after(500, lambda: enemy_bullet_draw(main_area))
+        root.after(1000, lambda: enemy_bullet_draw(main_area))
     except IndexError:
         return
     except tk.TclError:
@@ -316,13 +311,11 @@ def player_death(main_area, player, player_lifes, bullets, lifes_ui):
 
                 elif item_tag[0] == "enemy":
                     show_end_screen()
-                    death = True
             except ValueError:
                 break
 
     if player_lifes.get() == 0:
         show_end_screen()
-        death = True
 
     root.after(100, lambda: player_death(main_area, player, player_lifes, bullets, lifes_ui))
 
@@ -332,7 +325,6 @@ def ui_elements(main_area, player_lifes, score):
     return lifes_ui, score_ui
 
 def show_end_screen():
-    # Score_var = tk.IntVar(value=score)
     for widget in root.winfo_children():
         try:
             widget.pack_forget()
@@ -352,7 +344,7 @@ def level_layout():
     lifes_ui, score_ui = ui_elements(main_area, player_lifes, score)
     player = player_draw(main_area)
 
-    player_move(player, main_area, bullets)
+    player_move(player, main_area)
 
     enemies_draw(main_area)
     bullet_overlapping(main_area, bullets, score_ui, score)
@@ -363,16 +355,13 @@ def level_layout():
     enemy_bullet_move(main_area)
 
     player_death(main_area, player, player_lifes, bullets, lifes_ui)
-    # level_up(player_lifes, enemy_speed)
 
-    # root.bind('<KeyPress>', lambda event: player_move(event, main_area, player, main_area, bullets))
     root.bind('<KeyPress>', lambda event: on_key_press(event))
     root.bind('<KeyRelease>', lambda event: on_key_release(event))
     root.bind('<space>', lambda event: player_shoot(event, bullets, player, main_area))
 
 level = 0
 def main(level, player_lifes, enemy_speed, score):
-    # Score_var = score
     if level == 0 and len(enemies_coords) == 0:
         level_layout()
         level += 1
