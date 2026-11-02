@@ -4,7 +4,7 @@ from pprint import pprint
 import random
 
 # DONE: Create the Ship and Make it Move
-# DONE: Create Smooth Movement / Delta Time
+# DONE: Create Smooth Movement
 # DONE: Shooting Mechanics
 # DONE: RESIZE ASSETS TO FIT THE SCREEN
 # DONE: Enemies and its AI
@@ -12,6 +12,7 @@ import random
 # DONE: PLAYER LIFES
 # DONE: Score
 # DONE: GAME LOOP
+# DONE: END GAME SCREEN
 
 root = tk.Tk()
 
@@ -21,8 +22,8 @@ bullet_img = tk.PhotoImage(file=r'C:\Users\Thej\Projects\Space-Invaders-Py\Asset
 # Enemies
 crab_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Crab-1.png") # 4.0x
 squid_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Squid-1.png")
-octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
-ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Alienship.png")
+# octo_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Octo-1.png")
+# ship_img = tk.PhotoImage(file=r"C:\Users\Thej\Projects\Space-Invaders-Py\Assets\Enemies\Alienship.png")
 
 win_width, win_height = 1280, 720 # 960, 540
 scr_width, scr_height = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -332,21 +333,18 @@ def ui_elements(main_area, player_lifes, score):
 
 def show_end_screen():
     # Score_var = tk.IntVar(value=score)
-
     for widget in root.winfo_children():
         try:
             widget.pack_forget()
         except tk.TclError:
             pass
 
-    end_label = tk.Label(root, text="Game Over / The End", font={"Arial", 50}, bg="black", fg="White")
-    end_label.pack(pady=50)
+    end_label = tk.Label(root, text="Game Over", font=("Arial", 50, "bold"), bg="black", fg="White").pack(pady=30)
 
-    # score_label_1 = tk.Label(root, text="FINAL SCORE:", font={"Arial", 20}, bg="Black", fg="White")
-    # score_label_1.pack(pady=70)
+    score_label_1 = tk.Label(root, text=f"FINAL SCORE:", font=("Arial", 20, "bold"), bg="Black", fg="White").pack(pady=40)
+    score_label_2 = tk.Label(root, text=f"{score.get()}", font=("Arial", 100, "bold"), bg="Black", fg="White").pack(pady=50)
 
-    restart_btn = tk.Button(root, text='QUIT', command=root.destroy, bg="Black", fg="White")
-    restart_btn.pack(pady=10)
+    restart_btn = tk.Button(root, text='QUIT', command=root.destroy,font=('Arial', 20, "bold") , bg="Black", fg="White", width=50, height=50).pack(pady=70)
 
 def level_layout():
     frm = config()
@@ -380,7 +378,7 @@ def main(level, player_lifes, enemy_speed, score):
         level += 1
     elif level > 0 and len(enemies_coords) == 0:
         player_lifes.set(3)
-        enemy_speed.set(enemy_speed.get() - 200)
+        enemy_speed.set(enemy_speed.get() - 300)
 
         bullets.clear()
         enemy_bullets.clear()
