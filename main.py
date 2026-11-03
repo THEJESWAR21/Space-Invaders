@@ -362,22 +362,26 @@ def show_end_screen():
 
 def level_layout():
     """ LEVEL LAYOUT EVERY ROUND """
+
     # MAIN
     frm = config()
     main_area = main_area_draw(frm)
     lifes_ui, score_ui = ui_elements(main_area, player_lifes, score)
-    
+
     # PLAYER
     player = player_draw(main_area)
     player_move(player, main_area)
-    player_death(main_area, player, player_lifes, bullets, lifes_ui)
 
     # ENEMIES
     enemies_draw(main_area)
     bullet_overlapping(main_area, bullets, score_ui, score)
     move_enemies(main_area, direction, enemy_speed)
+    move_bullet(main_area, bullets)
     enemy_bullet_draw(main_area)
     enemy_bullet_move(main_area)
+
+    # PLAYER DEATH
+    player_death(main_area, player, player_lifes, bullets, lifes_ui)
 
     # KEY BINDING
     root.bind('<KeyPress>', lambda event: on_key_press(event))
@@ -385,8 +389,7 @@ def level_layout():
     root.bind('<space>', lambda event: player_shoot(event, bullets, player, main_area))
 
 def main(level, player_lifes, enemy_speed, score):
-    """ INCREATE DIFFICULTY AS LEVEL INCREASES """
-
+    """ INCREASTE DIFFUCLITY AS LEVEL PROGRESSES """
     if level == 0 and len(enemies_coords) == 0:
         level_layout()
         level += 1
@@ -398,7 +401,7 @@ def main(level, player_lifes, enemy_speed, score):
         enemy_bullets.clear()
         pressed_keys.clear()
 
-        # DESTORY ALL ELEMENT ON SCREEN
+        # DESTORY ALL WIDGETS FROM SCREEN
         for widget in root.winfo_children():
             widget.destroy()
 
