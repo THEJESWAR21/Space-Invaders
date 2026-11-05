@@ -79,9 +79,11 @@ def player_draw(main_area):
     return player
 
 def on_key_press(event):
+    """ TRACK PRESSED KEYS TO SET """
     pressed_keys.add(event.keysym)
 
 def on_key_release(event):
+    """ REMOVE RELEASED KEYS FROM SET"""
     pressed_keys.discard(event.keysym)
 
 def player_move(player, main_area):
@@ -362,7 +364,6 @@ def show_end_screen():
 
 def level_layout():
     """ LEVEL LAYOUT EVERY ROUND """
-
     # MAIN
     frm = config()
     main_area = main_area_draw(frm)
